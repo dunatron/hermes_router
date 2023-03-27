@@ -11,9 +11,9 @@ import 'misc/errors.dart';
 ///
 /// The state contains parsed artifacts of the current URI.
 @immutable
-class GoRouterState {
+class HermesRouterState {
   /// Default constructor for creating route state during routing.
-  const GoRouterState(
+  const HermesRouterState(
     this._configuration, {
     required this.location,
     required this.subloc,
@@ -70,27 +70,27 @@ class GoRouterState {
   /// ```
   final ValueKey<String> pageKey;
 
-  /// Gets the [GoRouterState] from context.
+  /// Gets the [HermesRouterState] from context.
   ///
-  /// The returned [GoRouterState] will depends on which [GoRoute] or
+  /// The returned [HermesRouterState] will depends on which [HermesRoute] or
   /// [ShellRoute] the input `context` is in.
   ///
-  /// This method only supports [GoRoute] and [ShellRoute] that generate
-  /// [ModalRoute]s. This is typically the case if one uses [GoRoute.builder],
+  /// This method only supports [HermesRoute] and [ShellRoute] that generate
+  /// [ModalRoute]s. This is typically the case if one uses [HermesRoute.builder],
   /// [ShellRoute.builder], [CupertinoPage], [MaterialPage],
   /// [CustomTransitionPage], or [NoTransitionPage].
   ///
-  /// This method is fine to be called during [GoRoute.builder] or
+  /// This method is fine to be called during [HermesRoute.builder] or
   /// [ShellRoute.builder].
   ///
-  /// This method cannot be called during [GoRoute.pageBuilder] or
-  /// [ShellRoute.pageBuilder] since there is no [GoRouterState] to be
+  /// This method cannot be called during [HermesRoute.pageBuilder] or
+  /// [ShellRoute.pageBuilder] since there is no [HermesRouterState] to be
   /// associated with.
   ///
-  /// To access GoRouterState from a widget.
+  /// To access HermesRouterState from a widget.
   ///
   /// ```
-  /// GoRoute(
+  /// HermesRoute(
   ///   path: '/:id'
   ///   builder: (_, __) => MyWidget(),
   /// );
@@ -98,34 +98,34 @@ class GoRouterState {
   /// class MyWidget extends StatelessWidget {
   ///   @override
   ///   Widget build(BuildContext context) {
-  ///     return Text('${GoRouterState.of(context).params['id']}');
+  ///     return Text('${HermesRouterState.of(context).params['id']}');
   ///   }
   /// }
   /// ```
-  static GoRouterState of(BuildContext context) {
+  static HermesRouterState of(BuildContext context) {
     final ModalRoute<Object?>? route = ModalRoute.of(context);
     if (route == null) {
-      throw GoError('There is no modal route above the current context.');
+      throw HermesError('There is no modal route above the current context.');
     }
     final RouteSettings settings = route.settings;
     if (settings is! Page<Object?>) {
-      throw GoError(
-          'The parent route must be a page route to have a GoRouterState');
+      throw HermesError(
+          'The parent route must be a page route to have a HermesRouterState');
     }
-    final GoRouterStateRegistryScope? scope = context
-        .dependOnInheritedWidgetOfExactType<GoRouterStateRegistryScope>();
+    final HermesRouterStateRegistryScope? scope = context
+        .dependOnInheritedWidgetOfExactType<HermesRouterStateRegistryScope>();
     if (scope == null) {
-      throw GoError(
-          'There is no GoRouterStateRegistryScope above the current context.');
+      throw HermesError(
+          'There is no HermesRouterStateRegistryScope above the current context.');
     }
-    final GoRouterState state =
+    final HermesRouterState state =
         scope.notifier!._createPageRouteAssociation(settings, route);
     return state;
   }
 
   /// Get a location from route name and parameters.
   /// This is useful for redirecting to a named location.
-  @Deprecated('Use GoRouter.of(context).namedLocation instead')
+  @Deprecated('Use HermesRouter.of(context).namedLocation instead')
   String namedLocation(
     String name, {
     Map<String, String> params = const <String, String>{},
@@ -137,7 +137,7 @@ class GoRouterState {
 
   @override
   bool operator ==(Object other) {
-    return other is GoRouterState &&
+    return other is HermesRouterState &&
         other.location == location &&
         other.subloc == subloc &&
         other.name == name &&
@@ -156,37 +156,37 @@ class GoRouterState {
       params, queryParams, queryParametersAll, extra, error, pageKey);
 }
 
-/// An inherited widget to host a [GoRouterStateRegistry] for the subtree.
+/// An inherited widget to host a [HermesRouterStateRegistry] for the subtree.
 ///
-/// Should not be used directly, consider using [GoRouterState.of] to access
-/// [GoRouterState] from the context.
-class GoRouterStateRegistryScope
-    extends InheritedNotifier<GoRouterStateRegistry> {
-  /// Creates a GoRouterStateRegistryScope.
-  const GoRouterStateRegistryScope({
+/// Should not be used directly, consider using [HermesRouterState.of] to access
+/// [HermesRouterState] from the context.
+class HermesRouterStateRegistryScope
+    extends InheritedNotifier<HermesRouterStateRegistry> {
+  /// Creates a HermesRouterStateRegistryScope.
+  const HermesRouterStateRegistryScope({
     super.key,
-    required GoRouterStateRegistry registry,
+    required HermesRouterStateRegistry registry,
     required super.child,
   }) : super(notifier: registry);
 }
 
-/// A registry to record [GoRouterState] to [Page] relation.
+/// A registry to record [HermesRouterState] to [Page] relation.
 ///
-/// Should not be used directly, consider using [GoRouterState.of] to access
-/// [GoRouterState] from the context.
-class GoRouterStateRegistry extends ChangeNotifier {
-  /// creates a [GoRouterStateRegistry].
-  GoRouterStateRegistry();
+/// Should not be used directly, consider using [HermesRouterState.of] to access
+/// [HermesRouterState] from the context.
+class HermesRouterStateRegistry extends ChangeNotifier {
+  /// creates a [HermesRouterStateRegistry].
+  HermesRouterStateRegistry();
 
-  /// A [Map] that maps a [Page] to a [GoRouterState].
+  /// A [Map] that maps a [Page] to a [HermesRouterState].
   @visibleForTesting
-  final Map<Page<Object?>, GoRouterState> registry =
-      <Page<Object?>, GoRouterState>{};
+  final Map<Page<Object?>, HermesRouterState> registry =
+      <Page<Object?>, HermesRouterState>{};
 
   final Map<Route<Object?>, Page<Object?>> _routePageAssociation =
       <ModalRoute<Object?>, Page<Object?>>{};
 
-  GoRouterState _createPageRouteAssociation(
+  HermesRouterState _createPageRouteAssociation(
       Page<Object?> page, ModalRoute<Object?> route) {
     assert(route.settings == page);
     assert(registry.containsKey(page));
@@ -195,7 +195,7 @@ class GoRouterStateRegistry extends ChangeNotifier {
       // This is a new association.
       _routePageAssociation[route] = page;
       // If there is an association, the registry relies on the route to remove
-      // entry from registry because it wants to preserve the GoRouterState
+      // entry from registry because it wants to preserve the HermesRouterState
       // until the route finishes the popping animations.
       route.completed.then<void>((Object? result) {
         // Can't use `page` directly because Route.settings may have changed during
@@ -216,13 +216,13 @@ class GoRouterStateRegistry extends ChangeNotifier {
   }
 
   /// Updates this registry with new records.
-  void updateRegistry(Map<Page<Object?>, GoRouterState> newRegistry) {
+  void updateRegistry(Map<Page<Object?>, HermesRouterState> newRegistry) {
     bool shouldNotify = false;
     final Set<Page<Object?>> pagesWithAssociation =
         _routePageAssociation.values.toSet();
-    for (final MapEntry<Page<Object?>, GoRouterState> entry
+    for (final MapEntry<Page<Object?>, HermesRouterState> entry
         in newRegistry.entries) {
-      final GoRouterState? existingState = registry[entry.key];
+      final HermesRouterState? existingState = registry[entry.key];
       if (existingState != null) {
         if (existingState != entry.value) {
           shouldNotify =
@@ -236,7 +236,7 @@ class GoRouterStateRegistry extends ChangeNotifier {
       // Adding or removing registry does not need to notify the listen since
       // no one should be depending on them.
     }
-    registry.removeWhere((Page<Object?> key, GoRouterState value) {
+    registry.removeWhere((Page<Object?> key, HermesRouterState value) {
       if (newRegistry.containsKey(key)) {
         return false;
       }

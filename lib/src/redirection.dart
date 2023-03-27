@@ -11,7 +11,7 @@ import 'logging.dart';
 import 'match.dart';
 import 'matching.dart';
 
-/// A GoRouter redirector function.
+/// A HermesRouter redirector function.
 typedef RouteRedirector = FutureOr<RouteMatchList> Function(
     BuildContext, FutureOr<RouteMatchList>, RouteConfiguration, RouteMatcher,
     {List<RouteMatchList>? redirectHistory, Object? extra});
@@ -90,7 +90,7 @@ FutureOr<RouteMatchList> redirect(
     // Check for top-level redirect
     final FutureOr<String?> topRedirectResult = configuration.topRedirect(
       context,
-      GoRouterState(
+      HermesRouterState(
         configuration,
         location: prevLocation,
         name: null,
@@ -132,10 +132,10 @@ FutureOr<String?> _getRouteLevelRedirect(
           context, configuration, matchList, currentCheckIndex + 1);
   final RouteBase route = match.route;
   FutureOr<String?> routeRedirectResult;
-  if (route is GoRoute && route.redirect != null) {
+  if (route is HermesRoute && route.redirect != null) {
     routeRedirectResult = route.redirect!(
       context,
-      GoRouterState(
+      HermesRouterState(
         configuration,
         location: matchList.uri.toString(),
         subloc: match.subloc,

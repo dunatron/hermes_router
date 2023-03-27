@@ -29,14 +29,15 @@ WidgetTesterCallback testPageShowsExceptionMessage({
 WidgetTesterCallback testClickingTheButtonRedirectsToRoot({
   required Finder buttonFinder,
   required Widget widget,
-  Widget Function(GoRouter router) appRouterBuilder = materialAppRouterBuilder,
+  Widget Function(HermesRouter router) appRouterBuilder =
+      materialAppRouterBuilder,
 }) {
   return (WidgetTester tester) async {
-    final GoRouter router = GoRouter(
+    final HermesRouter router = HermesRouter(
       initialLocation: '/error',
-      routes: <GoRoute>[
-        GoRoute(path: '/', builder: (_, __) => const DummyStatefulWidget()),
-        GoRoute(
+      routes: <HermesRoute>[
+        HermesRoute(path: '/', builder: (_, __) => const DummyStatefulWidget()),
+        HermesRoute(
           path: '/error',
           builder: (_, __) => widget,
         ),
@@ -49,16 +50,16 @@ WidgetTesterCallback testClickingTheButtonRedirectsToRoot({
   };
 }
 
-Widget materialAppRouterBuilder(GoRouter router) {
+Widget materialAppRouterBuilder(HermesRouter router) {
   return MaterialApp.router(
     routerConfig: router,
-    title: 'GoRouter Example',
+    title: 'HermesRouter Example',
   );
 }
 
-Widget cupertinoAppRouterBuilder(GoRouter router) {
+Widget cupertinoAppRouterBuilder(HermesRouter router) {
   return CupertinoApp.router(
     routerConfig: router,
-    title: 'GoRouter Example',
+    title: 'HermesRouter Example',
   );
 }

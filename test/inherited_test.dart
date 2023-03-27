@@ -10,91 +10,93 @@ import 'package:hermes_router/hermes_router.dart';
 void main() {
   group('updateShouldNotify', () {
     test('does not update when goRouter does not change', () {
-      final GoRouter goRouter = GoRouter(
-        routes: <GoRoute>[
-          GoRoute(
+      final HermesRouter goRouter = HermesRouter(
+        routes: <HermesRoute>[
+          HermesRoute(
             path: '/',
             builder: (_, __) => const Page1(),
           ),
         ],
       );
-      final bool shouldNotify = setupInheritedGoRouterChange(
-        oldGoRouter: goRouter,
-        newGoRouter: goRouter,
+      final bool shouldNotify = setupInheritedHermesRouterChange(
+        oldHermesRouter: goRouter,
+        newHermesRouter: goRouter,
       );
       expect(shouldNotify, false);
     });
 
     test('updates when goRouter changes', () {
-      final GoRouter oldGoRouter = GoRouter(
-        routes: <GoRoute>[
-          GoRoute(
+      final HermesRouter oldHermesRouter = HermesRouter(
+        routes: <HermesRoute>[
+          HermesRoute(
             path: '/',
             builder: (_, __) => const Page1(),
           ),
         ],
       );
-      final GoRouter newGoRouter = GoRouter(
-        routes: <GoRoute>[
-          GoRoute(
+      final HermesRouter newHermesRouter = HermesRouter(
+        routes: <HermesRoute>[
+          HermesRoute(
             path: '/',
             builder: (_, __) => const Page2(),
           ),
         ],
       );
-      final bool shouldNotify = setupInheritedGoRouterChange(
-        oldGoRouter: oldGoRouter,
-        newGoRouter: newGoRouter,
+      final bool shouldNotify = setupInheritedHermesRouterChange(
+        oldHermesRouter: oldHermesRouter,
+        newHermesRouter: newHermesRouter,
       );
       expect(shouldNotify, true);
     });
   });
 
   test('adds [goRouter] as a diagnostics property', () {
-    final GoRouter goRouter = GoRouter(
-      routes: <GoRoute>[
-        GoRoute(
+    final HermesRouter goRouter = HermesRouter(
+      routes: <HermesRoute>[
+        HermesRoute(
           path: '/',
           builder: (_, __) => const Page1(),
         ),
       ],
     );
-    final InheritedGoRouter inheritedGoRouter = InheritedGoRouter(
+    final InheritedHermesRouter inheritedHermesRouter = InheritedHermesRouter(
       goRouter: goRouter,
       child: Container(),
     );
     final DiagnosticPropertiesBuilder properties =
         DiagnosticPropertiesBuilder();
-    inheritedGoRouter.debugFillProperties(properties);
+    inheritedHermesRouter.debugFillProperties(properties);
     expect(properties.properties.length, 1);
-    expect(properties.properties.first, isA<DiagnosticsProperty<GoRouter>>());
+    expect(
+        properties.properties.first, isA<DiagnosticsProperty<HermesRouter>>());
     expect(properties.properties.first.value, goRouter);
   });
 
-  testWidgets("mediates Widget's access to GoRouter.",
+  testWidgets("mediates Widget's access to HermesRouter.",
       (WidgetTester tester) async {
-    final MockGoRouter router = MockGoRouter();
+    final MockHermesRouter router = MockHermesRouter();
     await tester.pumpWidget(MaterialApp(
-        home: InheritedGoRouter(goRouter: router, child: const _MyWidget())));
+        home:
+            InheritedHermesRouter(goRouter: router, child: const _MyWidget())));
     await tester.tap(find.text('My Page'));
     expect(router.latestPushedName, 'my_page');
   });
 }
 
-bool setupInheritedGoRouterChange({
-  required GoRouter oldGoRouter,
-  required GoRouter newGoRouter,
+bool setupInheritedHermesRouterChange({
+  required HermesRouter oldHermesRouter,
+  required HermesRouter newHermesRouter,
 }) {
-  final InheritedGoRouter oldInheritedGoRouter = InheritedGoRouter(
-    goRouter: oldGoRouter,
+  final InheritedHermesRouter oldInheritedHermesRouter = InheritedHermesRouter(
+    goRouter: oldHermesRouter,
     child: Container(),
   );
-  final InheritedGoRouter newInheritedGoRouter = InheritedGoRouter(
-    goRouter: newGoRouter,
+  final InheritedHermesRouter newInheritedHermesRouter = InheritedHermesRouter(
+    goRouter: newHermesRouter,
     child: Container(),
   );
-  return newInheritedGoRouter.updateShouldNotify(
-    oldInheritedGoRouter,
+  return newInheritedHermesRouter.updateShouldNotify(
+    oldInheritedHermesRouter,
   );
 }
 
@@ -123,17 +125,18 @@ class _MyWidget extends StatelessWidget {
   }
 }
 
-class MockGoRouter extends GoRouter {
-  MockGoRouter() : super(routes: <GoRoute>[]);
+class MockHermesRouter extends HermesRouter {
+  MockHermesRouter() : super(routes: <HermesRoute>[]);
 
   late String latestPushedName;
 
   @override
-  void pushNamed(String name,
+  Future<T?> pushNamed<T extends Object?>(String name,
       {Map<String, String> params = const <String, String>{},
       Map<String, dynamic> queryParams = const <String, dynamic>{},
       Object? extra}) {
     latestPushedName = name;
+    return Future<T?>.value();
   }
 
   @override

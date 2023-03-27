@@ -7,14 +7,14 @@ import 'package:hermes_router/hermes_router.dart';
 
 void main() {
   test('throws when a builder is not set', () {
-    expect(() => GoRoute(path: '/'), throwsA(isAssertionError));
+    expect(() => HermesRoute(path: '/'), throwsA(isAssertionError));
   });
 
   test('throws when a path is empty', () {
-    expect(() => GoRoute(path: ''), throwsA(isAssertionError));
+    expect(() => HermesRoute(path: ''), throwsA(isAssertionError));
   });
 
   test('does not throw when only redirect is provided', () {
-    GoRoute(path: '/', redirect: (_, __) => '/a');
+    HermesRoute(path: '/', redirect: (_, __) => '/a');
   });
 }

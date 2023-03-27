@@ -17,7 +17,7 @@ import 'pages/material.dart';
 import 'route_data.dart';
 import 'typedefs.dart';
 
-/// Builds the top-level Navigator for GoRouter.
+/// Builds the top-level Navigator for HermesRouter.
 class RouteBuilder {
   /// [RouteBuilder] constructor.
   RouteBuilder({
@@ -30,13 +30,13 @@ class RouteBuilder {
   });
 
   /// Builder function for a go router with Navigator.
-  final GoRouterBuilderWithNav builderWithNav;
+  final HermesRouterBuilderWithNav builderWithNav;
 
   /// Error page builder for the go router delegate.
-  final GoRouterPageBuilder? errorPageBuilder;
+  final HermesRouterPageBuilder? errorPageBuilder;
 
   /// Error widget builder for the go router delegate.
-  final GoRouterWidgetBuilder? errorBuilder;
+  final HermesRouterWidgetBuilder? errorBuilder;
 
   /// The route configuration for the app.
   final RouteConfiguration configuration;
@@ -49,7 +49,7 @@ class RouteBuilder {
   /// changes.
   final List<NavigatorObserver> observers;
 
-  final GoRouterStateRegistry _registry = GoRouterStateRegistry();
+  final HermesRouterStateRegistry _registry = HermesRouterStateRegistry();
 
   final Map<Page<Object?>, RouteMatch> _routeMatchLookUp =
       <Page<Object?>, RouteMatch>{};
@@ -85,12 +85,12 @@ class RouteBuilder {
       Builder(
         builder: (BuildContext context) {
           try {
-            final Map<Page<Object?>, GoRouterState> newRegistry =
-                <Page<Object?>, GoRouterState>{};
+            final Map<Page<Object?>, HermesRouterState> newRegistry =
+                <Page<Object?>, HermesRouterState>{};
             final Widget result = tryBuild(context, matchList, onPopPage,
                 routerNeglect, configuration.navigatorKey, newRegistry);
             _registry.updateRegistry(newRegistry);
-            return GoRouterStateRegistryScope(
+            return HermesRouterStateRegistryScope(
                 registry: _registry, child: result);
           } on _RouteBuilderError catch (e) {
             return _buildErrorNavigator(context, e, matchList.uri, onPopPage,
@@ -112,7 +112,7 @@ class RouteBuilder {
     PopPageCallback onPopPage,
     bool routerNeglect,
     GlobalKey<NavigatorState> navigatorKey,
-    Map<Page<Object?>, GoRouterState> registry,
+    Map<Page<Object?>, HermesRouterState> registry,
   ) {
     return builderWithNav(
       context,
@@ -135,7 +135,7 @@ class RouteBuilder {
       PopPageCallback onPopPage,
       bool routerNeglect,
       GlobalKey<NavigatorState> navigatorKey,
-      Map<Page<Object?>, GoRouterState> registry) {
+      Map<Page<Object?>, HermesRouterState> registry) {
     final Map<GlobalKey<NavigatorState>, List<Page<Object?>>> keyToPage =
         <GlobalKey<NavigatorState>, List<Page<Object?>>>{};
     try {
@@ -166,7 +166,7 @@ class RouteBuilder {
     bool routerNeglect,
     Map<GlobalKey<NavigatorState>, List<Page<Object?>>> keyToPages,
     GlobalKey<NavigatorState> navigatorKey,
-    Map<Page<Object?>, GoRouterState> registry,
+    Map<Page<Object?>, HermesRouterState> registry,
   ) {
     if (startIndex >= matchList.matches.length) {
       return;
@@ -179,11 +179,11 @@ class RouteBuilder {
     }
 
     final RouteBase route = match.route;
-    final GoRouterState state = buildState(matchList, match);
-    if (route is GoRoute) {
+    final HermesRouterState state = buildState(matchList, match);
+    if (route is HermesRoute) {
       final Page<Object?> page = _buildPageForRoute(context, state, match);
       registry[page] = state;
-      // If this GoRoute is for a different Navigator, add it to the
+      // If this HermesRoute is for a different Navigator, add it to the
       // list of out of scope pages
       final GlobalKey<NavigatorState> goRouteNavKey =
           route.parentNavigatorKey ?? navigatorKey;
@@ -254,20 +254,20 @@ class RouteBuilder {
     );
   }
 
-  /// Helper method that builds a [GoRouterState] object for the given [match]
+  /// Helper method that builds a [HermesRouterState] object for the given [match]
   /// and [params].
   @visibleForTesting
-  GoRouterState buildState(RouteMatchList matchList, RouteMatch match) {
+  HermesRouterState buildState(RouteMatchList matchList, RouteMatch match) {
     final RouteBase route = match.route;
     String? name;
     String path = '';
-    if (route is GoRoute) {
+    if (route is HermesRoute) {
       name = route.name;
       path = route.path;
     }
     final RouteMatchList effectiveMatchList =
         match is ImperativeRouteMatch ? match.matches : matchList;
-    return GoRouterState(
+    return HermesRouterState(
       configuration,
       location: effectiveMatchList.uri.toString(),
       subloc: match.subloc,
@@ -285,14 +285,14 @@ class RouteBuilder {
 
   /// Builds a [Page] for [StackedRoute]
   Page<Object?> _buildPageForRoute(
-      BuildContext context, GoRouterState state, RouteMatch match,
+      BuildContext context, HermesRouterState state, RouteMatch match,
       {Widget? child}) {
     final RouteBase route = match.route;
     Page<Object?>? page;
 
-    if (route is GoRoute) {
+    if (route is HermesRoute) {
       // Call the pageBuilder if it's non-null
-      final GoRouterPageBuilder? pageBuilder = route.pageBuilder;
+      final HermesRouterPageBuilder? pageBuilder = route.pageBuilder;
       if (pageBuilder != null) {
         page = pageBuilder(context, state);
       }
@@ -319,15 +319,16 @@ class RouteBuilder {
 
   /// Calls the user-provided route builder from the [RouteMatch]'s [RouteBase].
   Widget _callRouteBuilder(
-      BuildContext context, GoRouterState state, RouteMatch match,
+      BuildContext context, HermesRouterState state, RouteMatch match,
       {Widget? childWidget}) {
     final RouteBase route = match.route;
 
-    if (route is GoRoute) {
-      final GoRouterWidgetBuilder? builder = route.builder;
+    if (route is HermesRoute) {
+      final HermesRouterWidgetBuilder? builder = route.builder;
 
       if (builder == null) {
-        throw _RouteBuilderError('No routeBuilder provided to GoRoute: $route');
+        throw _RouteBuilderError(
+            'No routeBuilder provided to HermesRoute: $route');
       }
 
       return builder(context, state);
@@ -353,7 +354,7 @@ class RouteBuilder {
 
   Widget Function(
     BuildContext context,
-    GoRouterState state,
+    HermesRouterState state,
   )? _errorBuilderForAppType;
 
   void _cacheAppType(BuildContext context) {
@@ -367,18 +368,18 @@ class RouteBuilder {
       if (elem != null && isMaterialApp(elem)) {
         log.info('Using MaterialApp configuration');
         _pageBuilderForAppType = pageBuilderForMaterialApp;
-        _errorBuilderForAppType =
-            (BuildContext c, GoRouterState s) => MaterialErrorScreen(s.error);
+        _errorBuilderForAppType = (BuildContext c, HermesRouterState s) =>
+            MaterialErrorScreen(s.error);
       } else if (elem != null && isCupertinoApp(elem)) {
         log.info('Using CupertinoApp configuration');
         _pageBuilderForAppType = pageBuilderForCupertinoApp;
-        _errorBuilderForAppType =
-            (BuildContext c, GoRouterState s) => CupertinoErrorScreen(s.error);
+        _errorBuilderForAppType = (BuildContext c, HermesRouterState s) =>
+            CupertinoErrorScreen(s.error);
       } else {
         log.info('Using WidgetsApp configuration');
         _pageBuilderForAppType = pageBuilderForWidgetApp;
         _errorBuilderForAppType =
-            (BuildContext c, GoRouterState s) => ErrorScreen(s.error);
+            (BuildContext c, HermesRouterState s) => ErrorScreen(s.error);
       }
     }
 
@@ -390,7 +391,7 @@ class RouteBuilder {
   @visibleForTesting
   Page<Object?> buildPage(
     BuildContext context,
-    GoRouterState state,
+    HermesRouterState state,
     Widget child,
   ) {
     // build the page based on app type
@@ -442,7 +443,7 @@ class RouteBuilder {
     _RouteBuilderError error,
     Uri uri,
   ) {
-    final GoRouterState state = GoRouterState(
+    final HermesRouterState state = HermesRouterState(
       configuration,
       location: uri.toString(),
       subloc: uri.path,
@@ -458,7 +459,7 @@ class RouteBuilder {
     // MaterialPage). Finally, if nothing is provided, use a default error page
     // wrapped in the app-specific page.
     _cacheAppType(context);
-    final GoRouterWidgetBuilder? errorBuilder = this.errorBuilder;
+    final HermesRouterWidgetBuilder? errorBuilder = this.errorBuilder;
     return errorPageBuilder != null
         ? errorPageBuilder!(context, state)
         : buildPage(

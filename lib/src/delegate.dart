@@ -14,16 +14,16 @@ import 'matching.dart';
 import 'misc/errors.dart';
 import 'typedefs.dart';
 
-/// GoRouter implementation of [RouterDelegate].
-class GoRouterDelegate extends RouterDelegate<RouteMatchList>
+/// HermesRouter implementation of [RouterDelegate].
+class HermesRouterDelegate extends RouterDelegate<RouteMatchList>
     with ChangeNotifier {
-  /// Constructor for GoRouter's implementation of the RouterDelegate base
+  /// Constructor for HermesRouter's implementation of the RouterDelegate base
   /// class.
-  GoRouterDelegate({
+  HermesRouterDelegate({
     required RouteConfiguration configuration,
-    required GoRouterBuilderWithNav builderWithNav,
-    required GoRouterPageBuilder? errorPageBuilder,
-    required GoRouterWidgetBuilder? errorBuilder,
+    required HermesRouterBuilderWithNav builderWithNav,
+    required HermesRouterPageBuilder? errorPageBuilder,
+    required HermesRouterWidgetBuilder? errorBuilder,
     required List<NavigatorObserver> observers,
     required this.routerNeglect,
     String? restorationScopeId,
@@ -135,7 +135,7 @@ class GoRouterDelegate extends RouterDelegate<RouteMatchList>
         return;
       }
     }
-    throw GoError('There is nothing to pop');
+    throw HermesError('There is nothing to pop');
   }
 
   void _debugAssertMatchListNotEmpty() {
@@ -232,7 +232,7 @@ class GoRouterDelegate extends RouterDelegate<RouteMatchList>
   }
 }
 
-/// An iterator that iterates through navigators that [GoRouterDelegate]
+/// An iterator that iterates through navigators that [HermesRouterDelegate]
 /// created from the inner to outer.
 ///
 /// The iterator starts with the navigator that hosts the top-most route. This
@@ -256,7 +256,7 @@ class _NavigatorStateIterator extends Iterator<NavigatorState> {
     for (index -= 1; index >= 0; index -= 1) {
       final RouteMatch match = matchList.matches[index];
       final RouteBase route = match.route;
-      if (route is GoRoute && route.parentNavigatorKey != null) {
+      if (route is HermesRoute && route.parentNavigatorKey != null) {
         final GlobalKey<NavigatorState> parentNavigatorKey =
             route.parentNavigatorKey!;
         final ModalRoute<Object?>? parentModalRoute =
@@ -310,7 +310,7 @@ class _NavigatorStateIterator extends Iterator<NavigatorState> {
   }
 }
 
-/// The route match that represent route pushed through [GoRouter.push].
+/// The route match that represent route pushed through [HermesRouter.push].
 // TODO(chunhtai): Removes this once imperative API no longer insert route match.
 class ImperativeRouteMatch<T> extends RouteMatch {
   /// Constructor for [ImperativeRouteMatch].
@@ -326,7 +326,7 @@ class ImperativeRouteMatch<T> extends RouteMatch {
   /// The matches that produces this route match.
   final RouteMatchList matches;
 
-  /// The completer for the future returned by [GoRouter.push].
+  /// The completer for the future returned by [HermesRouter.push].
   final Completer<T?> _completer;
 
   @override

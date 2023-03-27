@@ -7,10 +7,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 /// The [RouteInformationProvider] created by go_router.
-class GoRouteInformationProvider extends RouteInformationProvider
+class HermesRouteInformationProvider extends RouteInformationProvider
     with WidgetsBindingObserver, ChangeNotifier {
-  /// Creates a [GoRouteInformationProvider].
-  GoRouteInformationProvider({
+  /// Creates a [HermesRouteInformationProvider].
+  HermesRouteInformationProvider({
     required RouteInformation initialRouteInformation,
     Listenable? refreshListenable,
   })  : _refreshListenable = refreshListenable,

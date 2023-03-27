@@ -21,7 +21,7 @@ void main() {
           RouteConfiguration(
             navigatorKey: root,
             routes: <RouteBase>[
-              GoRoute(
+              HermesRoute(
                 path: '/a',
                 builder: _mockScreenBuilder,
                 routes: <RouteBase>[
@@ -29,7 +29,7 @@ void main() {
                     navigatorKey: a,
                     builder: _mockShellBuilder,
                     routes: <RouteBase>[
-                      GoRoute(
+                      HermesRoute(
                         path: 'b',
                         builder: _mockScreenBuilder,
                       )
@@ -39,7 +39,7 @@ void main() {
                     navigatorKey: b,
                     builder: _mockShellBuilder,
                     routes: <RouteBase>[
-                      GoRoute(
+                      HermesRoute(
                         path: 'c',
                         parentNavigatorKey: a,
                         builder: _mockScreenBuilder,
@@ -50,7 +50,7 @@ void main() {
               ),
             ],
             redirectLimit: 10,
-            topRedirect: (BuildContext context, GoRouterState state) {
+            topRedirect: (BuildContext context, HermesRouterState state) {
               return null;
             },
           );
@@ -71,7 +71,7 @@ void main() {
               ShellRoute(routes: shellRouteChildren),
             ],
             redirectLimit: 10,
-            topRedirect: (BuildContext context, GoRouterState state) {
+            topRedirect: (BuildContext context, HermesRouterState state) {
               return null;
             },
           );
@@ -81,7 +81,7 @@ void main() {
     });
 
     test(
-        'throws when there is a GoRoute ancestor with a different parentNavigatorKey',
+        'throws when there is a HermesRoute ancestor with a different parentNavigatorKey',
         () {
       final GlobalKey<NavigatorState> root =
           GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -95,12 +95,12 @@ void main() {
               ShellRoute(
                 navigatorKey: shell,
                 routes: <RouteBase>[
-                  GoRoute(
+                  HermesRoute(
                     path: '/',
                     builder: _mockScreenBuilder,
                     parentNavigatorKey: root,
                     routes: <RouteBase>[
-                      GoRoute(
+                      HermesRoute(
                         path: 'a',
                         builder: _mockScreenBuilder,
                         parentNavigatorKey: shell,
@@ -111,7 +111,7 @@ void main() {
               ),
             ],
             redirectLimit: 10,
-            topRedirect: (BuildContext context, GoRouterState state) {
+            topRedirect: (BuildContext context, HermesRouterState state) {
               return null;
             },
           );
@@ -135,11 +135,11 @@ void main() {
             ShellRoute(
               navigatorKey: shell,
               routes: <RouteBase>[
-                GoRoute(
+                HermesRoute(
                   path: '/',
                   builder: _mockScreenBuilder,
                   routes: <RouteBase>[
-                    GoRoute(
+                    HermesRoute(
                       path: 'a',
                       builder: _mockScreenBuilder,
                       parentNavigatorKey: root,
@@ -147,11 +147,11 @@ void main() {
                         ShellRoute(
                           navigatorKey: shell2,
                           routes: <RouteBase>[
-                            GoRoute(
+                            HermesRoute(
                               path: 'b',
                               builder: _mockScreenBuilder,
                               routes: <RouteBase>[
-                                GoRoute(
+                                HermesRoute(
                                   path: 'b',
                                   builder: _mockScreenBuilder,
                                   parentNavigatorKey: shell2,
@@ -168,7 +168,7 @@ void main() {
             ),
           ],
           redirectLimit: 10,
-          topRedirect: (BuildContext context, GoRouterState state) {
+          topRedirect: (BuildContext context, HermesRouterState state) {
             return null;
           },
         );
@@ -176,7 +176,7 @@ void main() {
     );
 
     test(
-      'Does not throw with multiple nested GoRoutes using parentNavigatorKey in ShellRoute',
+      'Does not throw with multiple nested HermesRoutes using parentNavigatorKey in ShellRoute',
       () {
         final GlobalKey<NavigatorState> root =
             GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -188,21 +188,21 @@ void main() {
             ShellRoute(
               navigatorKey: shell,
               routes: <RouteBase>[
-                GoRoute(
+                HermesRoute(
                   path: '/',
                   builder: _mockScreenBuilder,
                   routes: <RouteBase>[
-                    GoRoute(
+                    HermesRoute(
                       path: 'a',
                       builder: _mockScreenBuilder,
                       parentNavigatorKey: root,
                       routes: <RouteBase>[
-                        GoRoute(
+                        HermesRoute(
                           path: 'b',
                           builder: _mockScreenBuilder,
                           parentNavigatorKey: root,
                           routes: <RouteBase>[
-                            GoRoute(
+                            HermesRoute(
                               path: 'c',
                               builder: _mockScreenBuilder,
                               parentNavigatorKey: root,
@@ -217,7 +217,7 @@ void main() {
             ),
           ],
           redirectLimit: 10,
-          topRedirect: (BuildContext context, GoRouterState state) {
+          topRedirect: (BuildContext context, HermesRouterState state) {
             return null;
           },
         );
@@ -238,20 +238,20 @@ void main() {
               ShellRoute(
                 navigatorKey: shell,
                 routes: <RouteBase>[
-                  GoRoute(
+                  HermesRoute(
                     path: '/',
                     builder: _mockScreenBuilder,
                     routes: <RouteBase>[
-                      GoRoute(
+                      HermesRoute(
                         path: 'a',
                         builder: _mockScreenBuilder,
                         parentNavigatorKey: root,
                         routes: <RouteBase>[
-                          GoRoute(
+                          HermesRoute(
                             path: 'b',
                             builder: _mockScreenBuilder,
                             routes: <RouteBase>[
-                              GoRoute(
+                              HermesRoute(
                                 path: 'b',
                                 builder: _mockScreenBuilder,
                                 parentNavigatorKey: shell,
@@ -266,7 +266,7 @@ void main() {
               ),
             ],
             redirectLimit: 10,
-            topRedirect: (BuildContext context, GoRouterState state) {
+            topRedirect: (BuildContext context, HermesRouterState state) {
               return null;
             },
           ),
@@ -288,20 +288,20 @@ void main() {
             ShellRoute(
               navigatorKey: shell,
               routes: <RouteBase>[
-                GoRoute(
+                HermesRoute(
                   path: '/',
                   builder: _mockScreenBuilder,
                   routes: <RouteBase>[
-                    GoRoute(
+                    HermesRoute(
                       path: 'a',
                       builder: _mockScreenBuilder,
                       parentNavigatorKey: shell,
                       routes: <RouteBase>[
-                        GoRoute(
+                        HermesRoute(
                           path: 'b',
                           builder: _mockScreenBuilder,
                           routes: <RouteBase>[
-                            GoRoute(
+                            HermesRoute(
                               path: 'b',
                               builder: _mockScreenBuilder,
                               parentNavigatorKey: root,
@@ -316,7 +316,7 @@ void main() {
             ),
           ],
           redirectLimit: 10,
-          topRedirect: (BuildContext context, GoRouterState state) {
+          topRedirect: (BuildContext context, HermesRouterState state) {
             return null;
           },
         );
@@ -324,8 +324,8 @@ void main() {
     );
 
     test(
-      'throws when a GoRoute with a different parentNavigatorKey '
-      'exists between a GoRoute with a parentNavigatorKey and '
+      'throws when a HermesRoute with a different parentNavigatorKey '
+      'exists between a HermesRoute with a parentNavigatorKey and '
       'its ShellRoute ancestor',
       () {
         final GlobalKey<NavigatorState> root =
@@ -341,11 +341,11 @@ void main() {
               ShellRoute(
                 navigatorKey: shell,
                 routes: <RouteBase>[
-                  GoRoute(
+                  HermesRoute(
                     path: '/',
                     builder: _mockScreenBuilder,
                     routes: <RouteBase>[
-                      GoRoute(
+                      HermesRoute(
                         path: 'a',
                         parentNavigatorKey: root,
                         builder: _mockScreenBuilder,
@@ -353,11 +353,11 @@ void main() {
                           ShellRoute(
                             navigatorKey: shell2,
                             routes: <RouteBase>[
-                              GoRoute(
+                              HermesRoute(
                                 path: 'b',
                                 builder: _mockScreenBuilder,
                                 routes: <RouteBase>[
-                                  GoRoute(
+                                  HermesRoute(
                                     path: 'c',
                                     builder: _mockScreenBuilder,
                                     parentNavigatorKey: shell,
@@ -374,7 +374,7 @@ void main() {
               ),
             ],
             redirectLimit: 10,
-            topRedirect: (BuildContext context, GoRouterState state) {
+            topRedirect: (BuildContext context, HermesRouterState state) {
               return null;
             },
           ),
@@ -393,26 +393,26 @@ void main() {
             routes: <RouteBase>[
               ShellRoute(
                 builder: _mockShellBuilder,
-                routes: <GoRoute>[
-                  GoRoute(
+                routes: <HermesRoute>[
+                  HermesRoute(
                     path: '/a',
                     builder: _mockScreenBuilder,
                   ),
                 ],
               ),
-              GoRoute(
+              HermesRoute(
                 path: '/b',
                 builder: _mockScreenBuilder,
               ),
             ],
           ),
-          GoRoute(
+          HermesRoute(
             path: '/c',
             builder: _mockScreenBuilder,
           ),
         ],
         redirectLimit: 10,
-        topRedirect: (BuildContext context, GoRouterState state) {
+        topRedirect: (BuildContext context, HermesRouterState state) {
           return null;
         },
         navigatorKey: root,
@@ -434,11 +434,11 @@ void main() {
             ShellRoute(
               navigatorKey: shell,
               routes: <RouteBase>[
-                GoRoute(
+                HermesRoute(
                   path: '/',
                   builder: _mockScreenBuilder,
                   routes: <RouteBase>[
-                    GoRoute(
+                    HermesRoute(
                       path: 'a',
                       builder: _mockScreenBuilder,
                       parentNavigatorKey: root,
@@ -446,11 +446,11 @@ void main() {
                         ShellRoute(
                           navigatorKey: shell2,
                           routes: <RouteBase>[
-                            GoRoute(
+                            HermesRoute(
                               path: 'b',
                               builder: _mockScreenBuilder,
                               routes: <RouteBase>[
-                                GoRoute(
+                                HermesRoute(
                                   path: 'b',
                                   builder: _mockScreenBuilder,
                                   parentNavigatorKey: shell2,
@@ -467,14 +467,15 @@ void main() {
             ),
           ],
           redirectLimit: 10,
-          topRedirect: (BuildContext context, GoRouterState state) {
+          topRedirect: (BuildContext context, HermesRouterState state) {
             return null;
           },
         );
       },
     );
 
-    test('throws when ShellRoute contains a GoRoute with a parentNavigatorKey',
+    test(
+        'throws when ShellRoute contains a HermesRoute with a parentNavigatorKey',
         () {
       final GlobalKey<NavigatorState> root =
           GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -485,7 +486,7 @@ void main() {
             routes: <RouteBase>[
               ShellRoute(
                 routes: <RouteBase>[
-                  GoRoute(
+                  HermesRoute(
                     path: '/a',
                     builder: _mockScreenBuilder,
                     parentNavigatorKey: root,
@@ -494,7 +495,7 @@ void main() {
               ),
             ],
             redirectLimit: 10,
-            topRedirect: (BuildContext context, GoRouterState state) {
+            topRedirect: (BuildContext context, HermesRouterState state) {
               return null;
             },
           );
@@ -512,9 +513,9 @@ class _MockScreen extends StatelessWidget {
   Widget build(BuildContext context) => const Placeholder();
 }
 
-Widget _mockScreenBuilder(BuildContext context, GoRouterState state) =>
+Widget _mockScreenBuilder(BuildContext context, HermesRouterState state) =>
     _MockScreen(key: state.pageKey);
 
 Widget _mockShellBuilder(
-        BuildContext context, GoRouterState state, Widget child) =>
+        BuildContext context, HermesRouterState state, Widget child) =>
     child;

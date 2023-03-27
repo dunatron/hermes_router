@@ -9,16 +9,16 @@ import 'package:hermes_router/src/delegate.dart';
 import 'package:hermes_router/src/match.dart';
 import 'package:hermes_router/src/misc/error_screen.dart';
 
-Future<GoRouter> createGoRouter(
+Future<HermesRouter> createHermesRouter(
   WidgetTester tester, {
   Listenable? refreshListenable,
 }) async {
-  final GoRouter router = GoRouter(
+  final HermesRouter router = HermesRouter(
     initialLocation: '/',
-    routes: <GoRoute>[
-      GoRoute(path: '/', builder: (_, __) => const DummyStatefulWidget()),
-      GoRoute(path: '/a', builder: (_, __) => const DummyStatefulWidget()),
-      GoRoute(
+    routes: <HermesRoute>[
+      HermesRoute(path: '/', builder: (_, __) => const DummyStatefulWidget()),
+      HermesRoute(path: '/a', builder: (_, __) => const DummyStatefulWidget()),
+      HermesRoute(
         path: '/error',
         builder: (_, __) => const ErrorScreen(null),
       ),
@@ -34,7 +34,7 @@ Future<GoRouter> createGoRouter(
 void main() {
   group('pop', () {
     testWidgets('removes the last element', (WidgetTester tester) async {
-      final GoRouter goRouter = await createGoRouter(tester)
+      final HermesRouter goRouter = await createHermesRouter(tester)
         ..push('/error');
       await tester.pumpAndSettle();
 
@@ -46,7 +46,7 @@ void main() {
 
     testWidgets('pops more than matches count should return false',
         (WidgetTester tester) async {
-      final GoRouter goRouter = await createGoRouter(tester)
+      final HermesRouter goRouter = await createHermesRouter(tester)
         ..push('/error');
       await tester.pumpAndSettle();
       await goRouter.routerDelegate.popRoute();
@@ -58,7 +58,7 @@ void main() {
     testWidgets(
       'It should return different pageKey when push is called',
       (WidgetTester tester) async {
-        final GoRouter goRouter = await createGoRouter(tester);
+        final HermesRouter goRouter = await createHermesRouter(tester);
         expect(goRouter.routerDelegate.matches.matches.length, 1);
 
         goRouter.push('/a');
@@ -67,7 +67,7 @@ void main() {
         expect(goRouter.routerDelegate.matches.matches.length, 2);
         expect(
           goRouter.routerDelegate.matches.matches[1].pageKey,
-          const Key('/a-p1'),
+          const ValueKey<String>('/a-p0'),
         );
 
         goRouter.push('/a');
@@ -76,7 +76,7 @@ void main() {
         expect(goRouter.routerDelegate.matches.matches.length, 3);
         expect(
           goRouter.routerDelegate.matches.matches[2].pageKey,
-          const Key('/a-p2'),
+          const ValueKey<String>('/a-p1'),
         );
       },
     );
@@ -86,7 +86,7 @@ void main() {
     testWidgets(
       'It should return false if there is only 1 match in the stack',
       (WidgetTester tester) async {
-        final GoRouter goRouter = await createGoRouter(tester);
+        final HermesRouter goRouter = await createHermesRouter(tester);
 
         await tester.pumpAndSettle();
         expect(goRouter.routerDelegate.matches.matches.length, 1);
@@ -96,7 +96,7 @@ void main() {
     testWidgets(
       'It should return true if there is more than 1 match in the stack',
       (WidgetTester tester) async {
-        final GoRouter goRouter = await createGoRouter(tester)
+        final HermesRouter goRouter = await createHermesRouter(tester)
           ..push('/a');
 
         await tester.pumpAndSettle();
@@ -109,12 +109,12 @@ void main() {
   group('pushReplacement', () {
     testWidgets('It should replace the last match with the given one',
         (WidgetTester tester) async {
-      final GoRouter goRouter = GoRouter(
+      final HermesRouter goRouter = HermesRouter(
         initialLocation: '/',
-        routes: <GoRoute>[
-          GoRoute(path: '/', builder: (_, __) => const SizedBox()),
-          GoRoute(path: '/page-0', builder: (_, __) => const SizedBox()),
-          GoRoute(path: '/page-1', builder: (_, __) => const SizedBox()),
+        routes: <HermesRoute>[
+          HermesRoute(path: '/', builder: (_, __) => const SizedBox()),
+          HermesRoute(path: '/page-0', builder: (_, __) => const SizedBox()),
+          HermesRoute(path: '/page-1', builder: (_, __) => const SizedBox()),
         ],
       );
       await tester.pumpWidget(
@@ -141,7 +141,7 @@ void main() {
         reason: 'The last match should have been removed',
       );
       expect(
-        (goRouter.routerDelegate.matches.last as ImperativeRouteMatch)
+        (goRouter.routerDelegate.matches.last as ImperativeRouteMatch<Object?>)
             .matches
             .uri
             .toString(),
@@ -151,9 +151,9 @@ void main() {
     });
 
     testWidgets(
-      'It should return different pageKey when replace is called',
+      'It should return different pageKey when pushReplacement is called',
       (WidgetTester tester) async {
-        final GoRouter goRouter = await createGoRouter(tester);
+        final HermesRouter goRouter = await createHermesRouter(tester);
         expect(goRouter.routerDelegate.matches.matches.length, 1);
         expect(
           goRouter.routerDelegate.matches.matches[0].pageKey,
@@ -166,7 +166,7 @@ void main() {
         expect(goRouter.routerDelegate.matches.matches.length, 2);
         expect(
           goRouter.routerDelegate.matches.matches.last.pageKey,
-          const Key('/a-p1'),
+          const ValueKey<String>('/a-p0'),
         );
 
         goRouter.pushReplacement('/a');
@@ -175,7 +175,7 @@ void main() {
         expect(goRouter.routerDelegate.matches.matches.length, 2);
         expect(
           goRouter.routerDelegate.matches.matches.last.pageKey,
-          const Key('/a-p2'),
+          const ValueKey<String>('/a-p1'),
         );
       },
     );
@@ -185,15 +185,15 @@ void main() {
     testWidgets(
       'It should replace the last match with the given one',
       (WidgetTester tester) async {
-        final GoRouter goRouter = GoRouter(
+        final HermesRouter goRouter = HermesRouter(
           initialLocation: '/',
-          routes: <GoRoute>[
-            GoRoute(path: '/', builder: (_, __) => const SizedBox()),
-            GoRoute(
+          routes: <HermesRoute>[
+            HermesRoute(path: '/', builder: (_, __) => const SizedBox()),
+            HermesRoute(
                 path: '/page-0',
                 name: 'page0',
                 builder: (_, __) => const SizedBox()),
-            GoRoute(
+            HermesRoute(
                 path: '/page-1',
                 name: 'page1',
                 builder: (_, __) => const SizedBox()),
@@ -225,7 +225,7 @@ void main() {
         expect(
           goRouter.routerDelegate.matches.last,
           isA<RouteMatch>().having(
-            (RouteMatch match) => (match.route as GoRoute).name,
+            (RouteMatch match) => (match.route as HermesRoute).name,
             'match.route.name',
             'page1',
           ),
@@ -235,11 +235,239 @@ void main() {
     );
   });
 
+  group('replace', () {
+    testWidgets('It should replace the last match with the given one',
+        (WidgetTester tester) async {
+      final HermesRouter goRouter = HermesRouter(
+        initialLocation: '/',
+        routes: <HermesRoute>[
+          HermesRoute(path: '/', builder: (_, __) => const SizedBox()),
+          HermesRoute(path: '/page-0', builder: (_, __) => const SizedBox()),
+          HermesRoute(path: '/page-1', builder: (_, __) => const SizedBox()),
+        ],
+      );
+      await tester.pumpWidget(
+        MaterialApp.router(
+          routerConfig: goRouter,
+        ),
+      );
+
+      goRouter.push('/page-0');
+
+      goRouter.routerDelegate.addListener(expectAsync0(() {}));
+      final RouteMatch first = goRouter.routerDelegate.matches.matches.first;
+      final RouteMatch last = goRouter.routerDelegate.matches.last;
+      goRouter.replace('/page-1');
+      expect(goRouter.routerDelegate.matches.matches.length, 2);
+      expect(
+        goRouter.routerDelegate.matches.matches.first,
+        first,
+        reason: 'The first match should still be in the list of matches',
+      );
+      expect(
+        goRouter.routerDelegate.matches.last,
+        isNot(last),
+        reason: 'The last match should have been removed',
+      );
+      expect(
+        (goRouter.routerDelegate.matches.last as ImperativeRouteMatch<Object?>)
+            .matches
+            .uri
+            .toString(),
+        '/page-1',
+        reason: 'The new location should have been pushed',
+      );
+    });
+
+    testWidgets(
+      'It should use the same pageKey when replace is called (with the same path)',
+      (WidgetTester tester) async {
+        final HermesRouter goRouter = await createHermesRouter(tester);
+        expect(goRouter.routerDelegate.matches.matches.length, 1);
+        expect(
+          goRouter.routerDelegate.matches.matches[0].pageKey,
+          isNotNull,
+        );
+
+        goRouter.push('/a');
+        await tester.pumpAndSettle();
+
+        expect(goRouter.routerDelegate.matches.matches.length, 2);
+        expect(
+          goRouter.routerDelegate.matches.matches.last.pageKey,
+          const ValueKey<String>('/a-p0'),
+        );
+
+        goRouter.replace('/a');
+        await tester.pumpAndSettle();
+
+        expect(goRouter.routerDelegate.matches.matches.length, 2);
+        expect(
+          goRouter.routerDelegate.matches.matches.last.pageKey,
+          const ValueKey<String>('/a-p0'),
+        );
+      },
+    );
+
+    testWidgets(
+      'It should use the same pageKey when replace is called (with a different path)',
+      (WidgetTester tester) async {
+        final HermesRouter goRouter = await createHermesRouter(tester);
+        expect(goRouter.routerDelegate.matches.matches.length, 1);
+        expect(
+          goRouter.routerDelegate.matches.matches[0].pageKey,
+          isNotNull,
+        );
+
+        goRouter.push('/a');
+        await tester.pumpAndSettle();
+
+        expect(goRouter.routerDelegate.matches.matches.length, 2);
+        expect(
+          goRouter.routerDelegate.matches.matches.last.pageKey,
+          const ValueKey<String>('/a-p0'),
+        );
+
+        goRouter.replace('/');
+        await tester.pumpAndSettle();
+
+        expect(goRouter.routerDelegate.matches.matches.length, 2);
+        expect(
+          goRouter.routerDelegate.matches.matches.last.pageKey,
+          const ValueKey<String>('/a-p0'),
+        );
+      },
+    );
+  });
+
+  group('replaceNamed', () {
+    Future<HermesRouter> createHermesRouter(
+      WidgetTester tester, {
+      Listenable? refreshListenable,
+    }) async {
+      final HermesRouter router = HermesRouter(
+        initialLocation: '/',
+        routes: <HermesRoute>[
+          HermesRoute(
+            path: '/',
+            name: 'home',
+            builder: (_, __) => const SizedBox(),
+          ),
+          HermesRoute(
+            path: '/page-0',
+            name: 'page0',
+            builder: (_, __) => const SizedBox(),
+          ),
+          HermesRoute(
+            path: '/page-1',
+            name: 'page1',
+            builder: (_, __) => const SizedBox(),
+          ),
+        ],
+      );
+      await tester.pumpWidget(MaterialApp.router(
+        routerConfig: router,
+      ));
+      return router;
+    }
+
+    testWidgets('It should replace the last match with the given one',
+        (WidgetTester tester) async {
+      final HermesRouter goRouter = await createHermesRouter(tester);
+
+      goRouter.pushNamed('page0');
+
+      goRouter.routerDelegate.addListener(expectAsync0(() {}));
+      final RouteMatch first = goRouter.routerDelegate.matches.matches.first;
+      final RouteMatch last = goRouter.routerDelegate.matches.last;
+      goRouter.replaceNamed('page1');
+      expect(goRouter.routerDelegate.matches.matches.length, 2);
+      expect(
+        goRouter.routerDelegate.matches.matches.first,
+        first,
+        reason: 'The first match should still be in the list of matches',
+      );
+      expect(
+        goRouter.routerDelegate.matches.last,
+        isNot(last),
+        reason: 'The last match should have been removed',
+      );
+      expect(
+        (goRouter.routerDelegate.matches.last as ImperativeRouteMatch<Object?>)
+            .matches
+            .uri
+            .toString(),
+        '/page-1',
+        reason: 'The new location should have been pushed',
+      );
+    });
+
+    testWidgets(
+      'It should use the same pageKey when replace is called with the same path',
+      (WidgetTester tester) async {
+        final HermesRouter goRouter = await createHermesRouter(tester);
+        expect(goRouter.routerDelegate.matches.matches.length, 1);
+        expect(
+          goRouter.routerDelegate.matches.matches.first.pageKey,
+          isNotNull,
+        );
+
+        goRouter.pushNamed('page0');
+        await tester.pumpAndSettle();
+
+        expect(goRouter.routerDelegate.matches.matches.length, 2);
+        expect(
+          goRouter.routerDelegate.matches.matches.last.pageKey,
+          const ValueKey<String>('/page-0-p0'),
+        );
+
+        goRouter.replaceNamed('page0');
+        await tester.pumpAndSettle();
+
+        expect(goRouter.routerDelegate.matches.matches.length, 2);
+        expect(
+          goRouter.routerDelegate.matches.matches.last.pageKey,
+          const ValueKey<String>('/page-0-p0'),
+        );
+      },
+    );
+
+    testWidgets(
+      'It should use a new pageKey when replace is called with a different path',
+      (WidgetTester tester) async {
+        final HermesRouter goRouter = await createHermesRouter(tester);
+        expect(goRouter.routerDelegate.matches.matches.length, 1);
+        expect(
+          goRouter.routerDelegate.matches.matches.first.pageKey,
+          isNotNull,
+        );
+
+        goRouter.pushNamed('page0');
+        await tester.pumpAndSettle();
+
+        expect(goRouter.routerDelegate.matches.matches.length, 2);
+        expect(
+          goRouter.routerDelegate.matches.matches.last.pageKey,
+          const ValueKey<String>('/page-0-p0'),
+        );
+
+        goRouter.replaceNamed('home');
+        await tester.pumpAndSettle();
+
+        expect(goRouter.routerDelegate.matches.matches.length, 2);
+        expect(
+          goRouter.routerDelegate.matches.matches.last.pageKey,
+          const ValueKey<String>('/page-0-p0'),
+        );
+      },
+    );
+  });
+
   testWidgets('dispose unsubscribes from refreshListenable',
       (WidgetTester tester) async {
     final FakeRefreshListenable refreshListenable = FakeRefreshListenable();
-    final GoRouter goRouter =
-        await createGoRouter(tester, refreshListenable: refreshListenable);
+    final HermesRouter goRouter =
+        await createHermesRouter(tester, refreshListenable: refreshListenable);
     await tester.pumpWidget(Container());
     goRouter.dispose();
     expect(refreshListenable.unsubscribed, true);

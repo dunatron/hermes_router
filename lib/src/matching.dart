@@ -49,7 +49,7 @@ class RouteMatcher {
 
 /// The list of [RouteMatch] objects.
 ///
-/// This corresponds to the GoRouter's history.
+/// This corresponds to the HermesRouter history.
 class RouteMatchList {
   /// RouteMatchList constructor.
   RouteMatchList(List<RouteMatch> matches, this._uri, this.pathParameters)
@@ -64,16 +64,16 @@ class RouteMatchList {
   /// [RouteMatch].
   ///
   /// This methods considers that [matches]'s elements verify the go route
-  /// structure given to `GoRouter`. For example, if the routes structure is
+  /// structure given to `HermesRouter`. For example, if the routes structure is
   ///
   /// ```dart
-  /// GoRoute(
+  /// HermesRoute(
   ///   path: '/a',
   ///   routes: [
-  ///     GoRoute(
+  ///     HermesRoute(
   ///       path: 'b',
   ///       routes: [
-  ///         GoRoute(
+  ///         HermesRoute(
   ///           path: 'c',
   ///         ),
   ///       ],
@@ -82,7 +82,7 @@ class RouteMatchList {
   /// ),
   /// ```
   ///
-  /// The [matches] must be the in same order of how GoRoutes are matched.
+  /// The [matches] must be the in same order of how HermesRoutes are matched.
   ///
   /// ```dart
   /// [RouteMatchA(), RouteMatchB(), RouteMatchC()]
@@ -92,7 +92,7 @@ class RouteMatchList {
     bool addsSlash = false;
     for (final RouteMatch match in matches) {
       final RouteBase route = match.route;
-      if (route is GoRoute) {
+      if (route is HermesRoute) {
         if (addsSlash) {
           buffer.write('/');
         }
@@ -196,7 +196,7 @@ class MatcherError extends Error {
 /// Returns the list of `RouteMatch` corresponding to the given `loc`.
 ///
 /// For example, for a given `loc` `/a/b/c/d`, this function will return the
-/// list of [RouteBase] `[GoRouteA(), GoRouterB(), GoRouteC(), GoRouterD()]`.
+/// list of [RouteBase] `[HermesRouteA(), HermesRouterB(), HermesRouteC(), HermesRouterD()]`.
 ///
 /// - [loc] is the complete URL to match (without the query parameters). For
 ///   example, for the URL `/a/b?c=0`, [loc] will be `/a/b`.
@@ -231,7 +231,7 @@ List<RouteMatch>? _getLocRouteRecursively({
       continue;
     }
 
-    if (match.route is GoRoute &&
+    if (match.route is HermesRoute &&
         match.subloc.toLowerCase() == loc.toLowerCase()) {
       // If it is a complete match, then return the matched route
       // NOTE: need a lower case match because subloc is canonicalized to match
@@ -289,9 +289,9 @@ RouteMatchList errorScreen(Uri uri, String errorMessage) {
           subloc: uri.path,
           extra: null,
           error: error,
-          route: GoRoute(
+          route: HermesRoute(
             path: uri.toString(),
-            pageBuilder: (BuildContext context, GoRouterState state) {
+            pageBuilder: (BuildContext context, HermesRouterState state) {
               throw UnimplementedError();
             },
           ),

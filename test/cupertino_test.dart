@@ -58,7 +58,7 @@ void main() {
     expect(page.child, child);
   });
 
-  group('GoRouterCupertinoErrorScreen', () {
+  group('HermesRouterCupertinoErrorScreen', () {
     testWidgets(
       'shows "page not found" by default',
       testPageNotFound(

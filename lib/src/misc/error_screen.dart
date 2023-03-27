@@ -32,7 +32,7 @@ class ErrorScreen extends StatelessWidget {
               _Button(
                 onPressed: () => context.go('/'),
                 child: const Text(
-                  'Go to home page',
+                  'Hermes to home page',
                   style: TextStyle(color: _kWhite),
                 ),
               ),

@@ -10,23 +10,23 @@ import 'package:hermes_router/src/configuration.dart';
 import 'test_helpers.dart';
 
 void main() {
-  group('GoRouterState from context', () {
+  group('HermesRouterState from context', () {
     testWidgets('works in builder', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
             path: '/',
             builder: (BuildContext context, _) {
-              final GoRouterState state = GoRouterState.of(context);
+              final HermesRouterState state = HermesRouterState.of(context);
               return Text('/ ${state.queryParams['p']}');
             }),
-        GoRoute(
+        HermesRoute(
             path: '/a',
             builder: (BuildContext context, _) {
-              final GoRouterState state = GoRouterState.of(context);
+              final HermesRouterState state = HermesRouterState.of(context);
               return Text('/a ${state.queryParams['p']}');
             }),
       ];
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       router.go('/?p=123');
       await tester.pumpAndSettle();
       expect(find.text('/ 123'), findsOneWidget);
@@ -37,25 +37,26 @@ void main() {
     });
 
     testWidgets('works in subtree', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
             path: '/',
             builder: (_, __) {
               return Builder(builder: (BuildContext context) {
-                return Text('1 ${GoRouterState.of(context).location}');
+                return Text('1 ${HermesRouterState.of(context).location}');
               });
             },
-            routes: <GoRoute>[
-              GoRoute(
+            routes: <HermesRoute>[
+              HermesRoute(
                   path: 'a',
                   builder: (_, __) {
                     return Builder(builder: (BuildContext context) {
-                      return Text('2 ${GoRouterState.of(context).location}');
+                      return Text(
+                          '2 ${HermesRouterState.of(context).location}');
                     });
                   }),
             ]),
       ];
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       router.go('/?p=123');
       await tester.pumpAndSettle();
       expect(find.text('1 /?p=123'), findsOneWidget);
@@ -67,33 +68,34 @@ void main() {
       expect(find.text('1 /a', skipOffstage: false), findsOneWidget);
     });
 
-    testWidgets('registry retains GoRouterState for exiting route',
+    testWidgets('registry retains HermesRouterState for exiting route',
         (WidgetTester tester) async {
       final UniqueKey key = UniqueKey();
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
             path: '/',
             builder: (_, __) {
               return Builder(builder: (BuildContext context) {
-                return Text(GoRouterState.of(context).location);
+                return Text(HermesRouterState.of(context).location);
               });
             },
-            routes: <GoRoute>[
-              GoRoute(
+            routes: <HermesRoute>[
+              HermesRoute(
                   path: 'a',
                   builder: (_, __) {
                     return Builder(builder: (BuildContext context) {
-                      return Text(key: key, GoRouterState.of(context).location);
+                      return Text(
+                          key: key, HermesRouterState.of(context).location);
                     });
                   }),
             ]),
       ];
-      final GoRouter router =
+      final HermesRouter router =
           await createRouter(routes, tester, initialLocation: '/a?p=123');
       expect(tester.widget<Text>(find.byKey(key)).data, '/a?p=123');
-      final GoRouterStateRegistry registry = tester
-          .widget<GoRouterStateRegistryScope>(
-              find.byType(GoRouterStateRegistryScope))
+      final HermesRouterStateRegistry registry = tester
+          .widget<HermesRouterStateRegistryScope>(
+              find.byType(HermesRouterStateRegistryScope))
           .notifier!;
       expect(registry.registry.length, 2);
       router.go('/');
@@ -112,20 +114,21 @@ void main() {
         (WidgetTester tester) async {
       final UniqueKey key = UniqueKey();
       final GlobalKey<NavigatorState> nav = GlobalKey<NavigatorState>();
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
             path: '/',
             builder: (_, __) {
               return Builder(builder: (BuildContext context) {
-                return Text(GoRouterState.of(context).location);
+                return Text(HermesRouterState.of(context).location);
               });
             },
-            routes: <GoRoute>[
-              GoRoute(
+            routes: <HermesRoute>[
+              HermesRoute(
                   path: 'a',
                   builder: (_, __) {
                     return Builder(builder: (BuildContext context) {
-                      return Text(key: key, GoRouterState.of(context).location);
+                      return Text(
+                          key: key, HermesRouterState.of(context).location);
                     });
                   }),
             ]),
@@ -133,9 +136,9 @@ void main() {
       await createRouter(routes, tester,
           initialLocation: '/a?p=123', navigatorKey: nav);
       expect(tester.widget<Text>(find.byKey(key)).data, '/a?p=123');
-      final GoRouterStateRegistry registry = tester
-          .widget<GoRouterStateRegistryScope>(
-              find.byType(GoRouterStateRegistryScope))
+      final HermesRouterStateRegistry registry = tester
+          .widget<HermesRouterStateRegistryScope>(
+              find.byType(HermesRouterStateRegistryScope))
           .notifier!;
       expect(registry.registry.length, 2);
       nav.currentState!.pop();

@@ -10,7 +10,7 @@ import 'package:hermes_router/src/match.dart';
 void main() {
   group('RouteMatch', () {
     test('simple', () {
-      final GoRoute route = GoRoute(
+      final HermesRoute route = HermesRoute(
         path: '/users/:userId',
         builder: _builder,
       );
@@ -34,7 +34,7 @@ void main() {
     });
 
     test('subloc', () {
-      final GoRoute route = GoRoute(
+      final HermesRoute route = HermesRoute(
         path: 'users/:userId',
         builder: _builder,
       );
@@ -60,8 +60,8 @@ void main() {
     test('ShellRoute has a unique pageKey', () {
       final ShellRoute route = ShellRoute(
         builder: _shellBuilder,
-        routes: <GoRoute>[
-          GoRoute(
+        routes: <HermesRoute>[
+          HermesRoute(
             path: '/users/:userId',
             builder: _builder,
           ),
@@ -84,8 +84,8 @@ void main() {
     test('ShellRoute Match has stable unique key', () {
       final ShellRoute route = ShellRoute(
         builder: _shellBuilder,
-        routes: <GoRoute>[
-          GoRoute(
+        routes: <HermesRoute>[
+          HermesRoute(
             path: '/users/:userId',
             builder: _builder,
           ),
@@ -111,8 +111,8 @@ void main() {
       expect(match1!.pageKey, match2!.pageKey);
     });
 
-    test('GoRoute Match has stable unique key', () {
-      final GoRoute route = GoRoute(
+    test('HermesRoute Match has stable unique key', () {
+      final HermesRoute route = HermesRoute(
         path: 'users/:userId',
         builder: _builder,
       );
@@ -153,8 +153,9 @@ class _Extra {
   int get hashCode => value.hashCode;
 }
 
-Widget _builder(BuildContext context, GoRouterState state) =>
+Widget _builder(BuildContext context, HermesRouterState state) =>
     const Placeholder();
 
-Widget _shellBuilder(BuildContext context, GoRouterState state, Widget child) =>
+Widget _shellBuilder(
+        BuildContext context, HermesRouterState state, Widget child) =>
     const Placeholder();

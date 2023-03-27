@@ -18,8 +18,8 @@ import 'package:logging/logging.dart';
 
 import 'test_helpers.dart';
 
-const bool enableLogs = true;
-final Logger log = Logger('GoRouter tests');
+const bool enableLogs = false;
+final Logger log = Logger('HermesRouter tests');
 
 Future<void> sendPlatformUrl(String url) async {
   final Map<String, dynamic> testRouteInformation = <String, dynamic>{
@@ -39,14 +39,14 @@ void main() {
 
   group('path routes', () {
     testWidgets('match home route', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
             path: '/',
-            builder: (BuildContext context, GoRouterState state) =>
+            builder: (BuildContext context, HermesRouterState state) =>
                 const HomeScreen()),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       final RouteMatchList matches = router.routerDelegate.matches;
       expect(matches.matches, hasLength(1));
       expect(matches.uri.toString(), '/');
@@ -55,34 +55,34 @@ void main() {
 
     testWidgets('If there is more than one route to match, use the first match',
         (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(name: '1', path: '/', builder: dummy),
-        GoRoute(name: '2', path: '/', builder: dummy),
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(name: '1', path: '/', builder: dummy),
+        HermesRoute(name: '2', path: '/', builder: dummy),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       router.go('/');
       final List<RouteMatch> matches = router.routerDelegate.matches.matches;
       expect(matches, hasLength(1));
-      expect((matches.first.route as GoRoute).name, '1');
+      expect((matches.first.route as HermesRoute).name, '1');
       expect(find.byType(DummyScreen), findsOneWidget);
     });
 
     test('empty path', () {
       expect(() {
-        GoRoute(path: '');
+        HermesRoute(path: '');
       }, throwsA(isAssertionError));
     });
 
     test('leading / on sub-route', () {
       expect(() {
-        GoRouter(
+        HermesRouter(
           routes: <RouteBase>[
-            GoRoute(
+            HermesRoute(
               path: '/',
               builder: dummy,
-              routes: <GoRoute>[
-                GoRoute(
+              routes: <HermesRoute>[
+                HermesRoute(
                   path: '/foo',
                   builder: dummy,
                 ),
@@ -95,13 +95,13 @@ void main() {
 
     test('trailing / on sub-route', () {
       expect(() {
-        GoRouter(
+        HermesRouter(
           routes: <RouteBase>[
-            GoRoute(
+            HermesRoute(
               path: '/',
               builder: dummy,
-              routes: <GoRoute>[
-                GoRoute(
+              routes: <HermesRoute>[
+                HermesRoute(
                   path: 'foo/',
                   builder: dummy,
                 ),
@@ -115,19 +115,19 @@ void main() {
     testWidgets('lack of leading / on top-level route',
         (WidgetTester tester) async {
       await expectLater(() async {
-        final List<GoRoute> routes = <GoRoute>[
-          GoRoute(path: 'foo', builder: dummy),
+        final List<HermesRoute> routes = <HermesRoute>[
+          HermesRoute(path: 'foo', builder: dummy),
         ];
         await createRouter(routes, tester);
       }, throwsA(isAssertionError));
     });
 
     testWidgets('match no routes', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(path: '/', builder: dummy),
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(path: '/', builder: dummy),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       router.go('/foo');
       await tester.pumpAndSettle();
       final List<RouteMatch> matches = router.routerDelegate.matches.matches;
@@ -136,18 +136,18 @@ void main() {
     });
 
     testWidgets('match 2nd top level route', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
             path: '/',
-            builder: (BuildContext context, GoRouterState state) =>
+            builder: (BuildContext context, HermesRouterState state) =>
                 const HomeScreen()),
-        GoRoute(
+        HermesRoute(
             path: '/login',
-            builder: (BuildContext context, GoRouterState state) =>
+            builder: (BuildContext context, HermesRouterState state) =>
                 const LoginScreen()),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       router.go('/login');
       await tester.pumpAndSettle();
       final List<RouteMatch> matches = router.routerDelegate.matches.matches;
@@ -158,25 +158,25 @@ void main() {
 
     testWidgets('match 2nd top level route with subroutes',
         (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           path: '/',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const HomeScreen(),
-          routes: <GoRoute>[
-            GoRoute(
+          routes: <HermesRoute>[
+            HermesRoute(
                 path: 'page1',
-                builder: (BuildContext context, GoRouterState state) =>
+                builder: (BuildContext context, HermesRouterState state) =>
                     const Page1Screen())
           ],
         ),
-        GoRoute(
+        HermesRoute(
             path: '/login',
-            builder: (BuildContext context, GoRouterState state) =>
+            builder: (BuildContext context, HermesRouterState state) =>
                 const LoginScreen()),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       router.go('/login');
       await tester.pumpAndSettle();
       final List<RouteMatch> matches = router.routerDelegate.matches.matches;
@@ -187,20 +187,20 @@ void main() {
 
     testWidgets('match top level route when location has trailing /',
         (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           path: '/',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const HomeScreen(),
         ),
-        GoRoute(
+        HermesRoute(
           path: '/login',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const LoginScreen(),
         ),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       router.go('/login/');
       await tester.pumpAndSettle();
       final List<RouteMatch> matches = router.routerDelegate.matches.matches;
@@ -211,15 +211,15 @@ void main() {
 
     testWidgets('match top level route when location has trailing / (2)',
         (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
             path: '/profile',
             builder: dummy,
             redirect: (_, __) => '/profile/foo'),
-        GoRoute(path: '/profile/:kind', builder: dummy),
+        HermesRoute(path: '/profile/:kind', builder: dummy),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       router.go('/profile/');
       await tester.pumpAndSettle();
       final List<RouteMatch> matches = router.routerDelegate.matches.matches;
@@ -230,15 +230,15 @@ void main() {
 
     testWidgets('match top level route when location has trailing / (3)',
         (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
             path: '/profile',
             builder: dummy,
             redirect: (_, __) => '/profile/foo'),
-        GoRoute(path: '/profile/:kind', builder: dummy),
+        HermesRoute(path: '/profile/:kind', builder: dummy),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       router.go('/profile/?bar=baz');
       await tester.pumpAndSettle();
       final List<RouteMatch> matches = router.routerDelegate.matches.matches;
@@ -247,33 +247,33 @@ void main() {
       expect(find.byType(DummyScreen), findsOneWidget);
     });
 
-    testWidgets('can access GoRouter parameters from builder',
+    testWidgets('can access HermesRouter parameters from builder',
         (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(path: '/', redirect: (_, __) => '/1'),
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(path: '/', redirect: (_, __) => '/1'),
+        HermesRoute(
             path: '/:id',
-            builder: (BuildContext context, GoRouterState state) {
-              return Text(GoRouter.of(context).location);
+            builder: (BuildContext context, HermesRouterState state) {
+              return Text(HermesRouter.of(context).location);
             }),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       expect(find.text('/1'), findsOneWidget);
       router.go('/123?id=456');
       await tester.pumpAndSettle();
       expect(find.text('/123?id=456'), findsOneWidget);
     });
 
-    testWidgets('can access GoRouter parameters from error builder',
+    testWidgets('can access HermesRouter parameters from error builder',
         (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(path: '/', builder: dummy),
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(path: '/', builder: dummy),
       ];
 
-      final GoRouter router = await createRouter(routes, tester,
-          errorBuilder: (BuildContext context, GoRouterState state) {
-        return Text(GoRouter.of(context).location);
+      final HermesRouter router = await createRouter(routes, tester,
+          errorBuilder: (BuildContext context, HermesRouterState state) {
+        return Text(HermesRouter.of(context).location);
       });
       router.go('/123?id=456');
       await tester.pumpAndSettle();
@@ -284,22 +284,22 @@ void main() {
     });
 
     testWidgets('match sub-route', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           path: '/',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const HomeScreen(),
-          routes: <GoRoute>[
-            GoRoute(
+          routes: <HermesRoute>[
+            HermesRoute(
               path: 'login',
-              builder: (BuildContext context, GoRouterState state) =>
+              builder: (BuildContext context, HermesRouterState state) =>
                   const LoginScreen(),
             ),
           ],
         ),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       router.go('/login');
       await tester.pumpAndSettle();
       final List<RouteMatch> matches = router.routerDelegate.matches.matches;
@@ -311,34 +311,34 @@ void main() {
     });
 
     testWidgets('match sub-routes', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           path: '/',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const HomeScreen(),
-          routes: <GoRoute>[
-            GoRoute(
+          routes: <HermesRoute>[
+            HermesRoute(
               path: 'family/:fid',
-              builder: (BuildContext context, GoRouterState state) =>
+              builder: (BuildContext context, HermesRouterState state) =>
                   const FamilyScreen('dummy'),
-              routes: <GoRoute>[
-                GoRoute(
+              routes: <HermesRoute>[
+                HermesRoute(
                   path: 'person/:pid',
-                  builder: (BuildContext context, GoRouterState state) =>
+                  builder: (BuildContext context, HermesRouterState state) =>
                       const PersonScreen('dummy', 'dummy'),
                 ),
               ],
             ),
-            GoRoute(
+            HermesRoute(
               path: 'login',
-              builder: (BuildContext context, GoRouterState state) =>
+              builder: (BuildContext context, HermesRouterState state) =>
                   const LoginScreen(),
             ),
           ],
         ),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       {
         final RouteMatchList matches = router.routerDelegate.matches;
         expect(matches.matches, hasLength(1));
@@ -384,30 +384,30 @@ void main() {
 
     testWidgets('return first matching route if too many subroutes',
         (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           path: '/',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const HomeScreen(),
-          routes: <GoRoute>[
-            GoRoute(
+          routes: <HermesRoute>[
+            HermesRoute(
               path: 'foo/bar',
-              builder: (BuildContext context, GoRouterState state) =>
+              builder: (BuildContext context, HermesRouterState state) =>
                   const FamilyScreen(''),
             ),
-            GoRoute(
+            HermesRoute(
               path: 'bar',
-              builder: (BuildContext context, GoRouterState state) =>
+              builder: (BuildContext context, HermesRouterState state) =>
                   const Page1Screen(),
             ),
-            GoRoute(
+            HermesRoute(
               path: 'foo',
-              builder: (BuildContext context, GoRouterState state) =>
+              builder: (BuildContext context, HermesRouterState state) =>
                   const Page2Screen(),
-              routes: <GoRoute>[
-                GoRoute(
+              routes: <HermesRoute>[
+                HermesRoute(
                   path: 'bar',
-                  builder: (BuildContext context, GoRouterState state) =>
+                  builder: (BuildContext context, HermesRouterState state) =>
                       const LoginScreen(),
                 ),
               ],
@@ -416,7 +416,7 @@ void main() {
         ),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       router.go('/bar');
       await tester.pumpAndSettle();
       List<RouteMatch> matches = router.routerDelegate.matches.matches;
@@ -437,11 +437,11 @@ void main() {
     });
 
     testWidgets('router state', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           name: 'home',
           path: '/',
-          builder: (BuildContext context, GoRouterState state) {
+          builder: (BuildContext context, HermesRouterState state) {
             expect(state.location, '/');
             expect(state.subloc, '/');
             expect(state.name, 'home');
@@ -454,11 +454,11 @@ void main() {
             }
             return const HomeScreen();
           },
-          routes: <GoRoute>[
-            GoRoute(
+          routes: <HermesRoute>[
+            HermesRoute(
               name: 'login',
               path: 'login',
-              builder: (BuildContext context, GoRouterState state) {
+              builder: (BuildContext context, HermesRouterState state) {
                 expect(state.location, '/login');
                 expect(state.subloc, '/login');
                 expect(state.name, 'login');
@@ -470,10 +470,10 @@ void main() {
                 return const LoginScreen();
               },
             ),
-            GoRoute(
+            HermesRoute(
               name: 'family',
               path: 'family/:fid',
-              builder: (BuildContext context, GoRouterState state) {
+              builder: (BuildContext context, HermesRouterState state) {
                 expect(
                   state.location,
                   anyOf(<String>['/family/f2', '/family/f2/person/p1']),
@@ -487,11 +487,11 @@ void main() {
                 expect(state.extra! as int, 3);
                 return FamilyScreen(state.params['fid']!);
               },
-              routes: <GoRoute>[
-                GoRoute(
+              routes: <HermesRoute>[
+                HermesRoute(
                   name: 'person',
                   path: 'person/:pid',
-                  builder: (BuildContext context, GoRouterState state) {
+                  builder: (BuildContext context, HermesRouterState state) {
                     expect(state.location, '/family/f2/person/p1');
                     expect(state.subloc, '/family/f2/person/p1');
                     expect(state.name, 'person');
@@ -513,7 +513,7 @@ void main() {
         ),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       router.go('/', extra: 1);
       await tester.pump();
       router.push('/login', extra: 2);
@@ -525,20 +525,20 @@ void main() {
     });
 
     testWidgets('match path case insensitively', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           path: '/',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const HomeScreen(),
         ),
-        GoRoute(
+        HermesRoute(
           path: '/family/:fid',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               FamilyScreen(state.params['fid']!),
         ),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       const String loc = '/FaMiLy/f2';
       router.go(loc);
       await tester.pumpAndSettle();
@@ -556,14 +556,14 @@ void main() {
     testWidgets(
         'If there is more than one route to match, use the first match.',
         (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(path: '/', builder: dummy),
-        GoRoute(path: '/page1', builder: dummy),
-        GoRoute(path: '/page1', builder: dummy),
-        GoRoute(path: '/:ok', builder: dummy),
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(path: '/', builder: dummy),
+        HermesRoute(path: '/page1', builder: dummy),
+        HermesRoute(path: '/page1', builder: dummy),
+        HermesRoute(path: '/:ok', builder: dummy),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       router.go('/user');
       await tester.pumpAndSettle();
       final List<RouteMatch> matches = router.routerDelegate.matches.matches;
@@ -574,17 +574,17 @@ void main() {
     testWidgets('Handles the Android back button correctly',
         (WidgetTester tester) async {
       final List<RouteBase> routes = <RouteBase>[
-        GoRoute(
+        HermesRoute(
           path: '/',
-          builder: (BuildContext context, GoRouterState state) {
+          builder: (BuildContext context, HermesRouterState state) {
             return const Scaffold(
               body: Text('Screen A'),
             );
           },
           routes: <RouteBase>[
-            GoRoute(
+            HermesRoute(
               path: 'b',
-              builder: (BuildContext context, GoRouterState state) {
+              builder: (BuildContext context, HermesRouterState state) {
                 return const Scaffold(
                   body: Text('Screen B'),
                 );
@@ -611,41 +611,43 @@ void main() {
 
       final List<RouteBase> routes = <RouteBase>[
         ShellRoute(
-          builder: (BuildContext context, GoRouterState state, Widget child) {
+          builder:
+              (BuildContext context, HermesRouterState state, Widget child) {
             return Scaffold(
               appBar: AppBar(title: const Text('Shell')),
               body: child,
             );
           },
-          routes: <GoRoute>[
-            GoRoute(
+          routes: <HermesRoute>[
+            HermesRoute(
               path: '/a',
-              builder: (BuildContext context, GoRouterState state) {
+              builder: (BuildContext context, HermesRouterState state) {
                 return const Scaffold(
                   body: Text('Screen A'),
                 );
               },
-              routes: <GoRoute>[
-                GoRoute(
+              routes: <HermesRoute>[
+                HermesRoute(
                   path: 'b',
-                  builder: (BuildContext context, GoRouterState state) {
+                  builder: (BuildContext context, HermesRouterState state) {
                     return const Scaffold(
                       body: Text('Screen B'),
                     );
                   },
-                  routes: <GoRoute>[
-                    GoRoute(
+                  routes: <HermesRoute>[
+                    HermesRoute(
                       path: 'c',
-                      builder: (BuildContext context, GoRouterState state) {
+                      builder: (BuildContext context, HermesRouterState state) {
                         return const Scaffold(
                           body: Text('Screen C'),
                         );
                       },
-                      routes: <GoRoute>[
-                        GoRoute(
+                      routes: <HermesRoute>[
+                        HermesRoute(
                           path: 'd',
                           parentNavigatorKey: rootNavigatorKey,
-                          builder: (BuildContext context, GoRouterState state) {
+                          builder:
+                              (BuildContext context, HermesRouterState state) {
                             return const Scaffold(
                               body: Text('Screen D'),
                             );
@@ -689,7 +691,8 @@ void main() {
         'Handles the Android back button when parentNavigatorKey is set to the root navigator',
         (WidgetTester tester) async {
       final List<MethodCall> log = <MethodCall>[];
-      TestDefaultBinaryMessengerBinding.instance!.defaultBinaryMessenger
+      _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+          .defaultBinaryMessenger
           .setMockMethodCallHandler(SystemChannels.platform,
               (MethodCall methodCall) async {
         log.add(methodCall);
@@ -706,10 +709,10 @@ void main() {
           GlobalKey<NavigatorState>();
 
       final List<RouteBase> routes = <RouteBase>[
-        GoRoute(
+        HermesRoute(
           parentNavigatorKey: rootNavigatorKey,
           path: '/a',
-          builder: (BuildContext context, GoRouterState state) {
+          builder: (BuildContext context, HermesRouterState state) {
             return const Scaffold(
               body: Text('Screen A'),
             );
@@ -731,7 +734,8 @@ void main() {
     testWidgets("Handles the Android back button when ShellRoute can't pop",
         (WidgetTester tester) async {
       final List<MethodCall> log = <MethodCall>[];
-      TestDefaultBinaryMessengerBinding.instance!.defaultBinaryMessenger
+      _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+          .defaultBinaryMessenger
           .setMockMethodCallHandler(SystemChannels.platform,
               (MethodCall methodCall) async {
         log.add(methodCall);
@@ -748,17 +752,18 @@ void main() {
           GlobalKey<NavigatorState>();
 
       final List<RouteBase> routes = <RouteBase>[
-        GoRoute(
+        HermesRoute(
           parentNavigatorKey: rootNavigatorKey,
           path: '/a',
-          builder: (BuildContext context, GoRouterState state) {
+          builder: (BuildContext context, HermesRouterState state) {
             return const Scaffold(
               body: Text('Screen A'),
             );
           },
         ),
         ShellRoute(
-          builder: (BuildContext context, GoRouterState state, Widget child) {
+          builder:
+              (BuildContext context, HermesRouterState state, Widget child) {
             return Scaffold(
               appBar: AppBar(
                 title: const Text('Shell'),
@@ -767,9 +772,9 @@ void main() {
             );
           },
           routes: <RouteBase>[
-            GoRoute(
+            HermesRoute(
               path: '/b',
-              builder: (BuildContext context, GoRouterState state) {
+              builder: (BuildContext context, HermesRouterState state) {
                 return const Scaffold(
                   body: Text('Screen B'),
                 );
@@ -792,10 +797,11 @@ void main() {
   });
 
   testWidgets(
-      'Handles the Android back button when a second Shell has a GoRoute with parentNavigator key',
+      'Handles the Android back button when a second Shell has a HermesRoute with parentNavigator key',
       (WidgetTester tester) async {
     final List<MethodCall> log = <MethodCall>[];
-    TestDefaultBinaryMessengerBinding.instance!.defaultBinaryMessenger
+    _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+        .defaultBinaryMessenger
         .setMockMethodCallHandler(SystemChannels.platform,
             (MethodCall methodCall) async {
       log.add(methodCall);
@@ -818,7 +824,7 @@ void main() {
     final List<RouteBase> routes = <RouteBase>[
       ShellRoute(
         navigatorKey: shellNavigatorKeyA,
-        builder: (BuildContext context, GoRouterState state, Widget child) {
+        builder: (BuildContext context, HermesRouterState state, Widget child) {
           return Scaffold(
             appBar: AppBar(
               title: const Text('Shell'),
@@ -827,9 +833,9 @@ void main() {
           );
         },
         routes: <RouteBase>[
-          GoRoute(
+          HermesRoute(
             path: '/a',
-            builder: (BuildContext context, GoRouterState state) {
+            builder: (BuildContext context, HermesRouterState state) {
               return const Scaffold(
                 body: Text('Screen A'),
               );
@@ -837,8 +843,8 @@ void main() {
             routes: <RouteBase>[
               ShellRoute(
                 navigatorKey: shellNavigatorKeyB,
-                builder:
-                    (BuildContext context, GoRouterState state, Widget child) {
+                builder: (BuildContext context, HermesRouterState state,
+                    Widget child) {
                   return Scaffold(
                     appBar: AppBar(
                       title: const Text('Shell'),
@@ -847,10 +853,10 @@ void main() {
                   );
                 },
                 routes: <RouteBase>[
-                  GoRoute(
+                  HermesRoute(
                     path: 'b',
                     parentNavigatorKey: shellNavigatorKeyB,
-                    builder: (BuildContext context, GoRouterState state) {
+                    builder: (BuildContext context, HermesRouterState state) {
                       return const Scaffold(
                         body: Text('Screen B'),
                       );
@@ -884,7 +890,8 @@ void main() {
   group('report correct url', () {
     final List<MethodCall> log = <MethodCall>[];
     setUp(() {
-      TestDefaultBinaryMessengerBinding.instance!.defaultBinaryMessenger
+      _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+          .defaultBinaryMessenger
           .setMockMethodCallHandler(SystemChannels.navigation,
               (MethodCall methodCall) async {
         log.add(methodCall);
@@ -892,24 +899,25 @@ void main() {
       });
     });
     tearDown(() {
-      TestDefaultBinaryMessengerBinding.instance!.defaultBinaryMessenger
+      _ambiguate(TestDefaultBinaryMessengerBinding.instance)!
+          .defaultBinaryMessenger
           .setMockMethodCallHandler(SystemChannels.navigation, null);
       log.clear();
     });
 
     testWidgets('on push', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           path: '/',
           builder: (_, __) => const DummyScreen(),
         ),
-        GoRoute(
+        HermesRoute(
           path: '/settings',
           builder: (_, __) => const DummyScreen(),
         ),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
 
       log.clear();
       router.push('/settings');
@@ -925,19 +933,19 @@ void main() {
     });
 
     testWidgets('on pop', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
             path: '/',
             builder: (_, __) => const DummyScreen(),
             routes: <RouteBase>[
-              GoRoute(
+              HermesRoute(
                 path: 'settings',
                 builder: (_, __) => const DummyScreen(),
               ),
             ]),
       ];
 
-      final GoRouter router =
+      final HermesRouter router =
           await createRouter(routes, tester, initialLocation: '/settings');
 
       log.clear();
@@ -954,16 +962,16 @@ void main() {
     });
 
     testWidgets('on pop twice', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
             path: '/',
             builder: (_, __) => const DummyScreen(),
             routes: <RouteBase>[
-              GoRoute(
+              HermesRoute(
                   path: 'settings',
                   builder: (_, __) => const DummyScreen(),
                   routes: <RouteBase>[
-                    GoRoute(
+                    HermesRoute(
                       path: 'profile',
                       builder: (_, __) => const DummyScreen(),
                     ),
@@ -971,7 +979,7 @@ void main() {
             ]),
       ];
 
-      final GoRouter router = await createRouter(routes, tester,
+      final HermesRouter router = await createRouter(routes, tester,
           initialLocation: '/settings/profile');
 
       log.clear();
@@ -989,19 +997,19 @@ void main() {
     });
 
     testWidgets('on pop with path parameters', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
             path: '/',
             builder: (_, __) => const DummyScreen(),
             routes: <RouteBase>[
-              GoRoute(
+              HermesRoute(
                 path: 'settings/:id',
                 builder: (_, __) => const DummyScreen(),
               ),
             ]),
       ];
 
-      final GoRouter router =
+      final HermesRouter router =
           await createRouter(routes, tester, initialLocation: '/settings/123');
 
       log.clear();
@@ -1019,19 +1027,19 @@ void main() {
 
     testWidgets('on pop with path parameters case 2',
         (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
             path: '/',
             builder: (_, __) => const DummyScreen(),
             routes: <RouteBase>[
-              GoRoute(
+              HermesRoute(
                 path: ':id',
                 builder: (_, __) => const DummyScreen(),
               ),
             ]),
       ];
 
-      final GoRouter router =
+      final HermesRouter router =
           await createRouter(routes, tester, initialLocation: '/123/');
 
       log.clear();
@@ -1053,34 +1061,34 @@ void main() {
           GlobalKey<NavigatorState>();
 
       final List<RouteBase> routes = <RouteBase>[
-        GoRoute(
+        HermesRoute(
           path: '/',
-          builder: (BuildContext context, GoRouterState state) {
+          builder: (BuildContext context, HermesRouterState state) {
             return const Scaffold(
               body: Text('Home'),
             );
           },
           routes: <RouteBase>[
             ShellRoute(
-              builder:
-                  (BuildContext context, GoRouterState state, Widget child) {
+              builder: (BuildContext context, HermesRouterState state,
+                  Widget child) {
                 return Scaffold(
                   appBar: AppBar(),
                   body: child,
                 );
               },
               routes: <RouteBase>[
-                GoRoute(
+                HermesRoute(
                   path: 'b',
-                  builder: (BuildContext context, GoRouterState state) {
+                  builder: (BuildContext context, HermesRouterState state) {
                     return const Scaffold(
                       body: Text('Screen B'),
                     );
                   },
                   routes: <RouteBase>[
-                    GoRoute(
+                    HermesRoute(
                       path: 'c',
-                      builder: (BuildContext context, GoRouterState state) {
+                      builder: (BuildContext context, HermesRouterState state) {
                         return const Scaffold(
                           body: Text('Screen C'),
                         );
@@ -1124,12 +1132,12 @@ void main() {
     testWidgets('works correctly with async redirect',
         (WidgetTester tester) async {
       final UniqueKey login = UniqueKey();
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           path: '/',
           builder: (_, __) => const DummyScreen(),
         ),
-        GoRoute(
+        HermesRoute(
           path: '/login',
           builder: (_, __) => DummyScreen(key: login),
         ),
@@ -1162,22 +1170,22 @@ void main() {
 
   group('named routes', () {
     testWidgets('match home route', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
             name: 'home',
             path: '/',
-            builder: (BuildContext context, GoRouterState state) =>
+            builder: (BuildContext context, HermesRouterState state) =>
                 const HomeScreen()),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       router.goNamed('home');
     });
 
     testWidgets('match too many routes', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(name: 'home', path: '/', builder: dummy),
-        GoRoute(name: 'home', path: '/', builder: dummy),
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(name: 'home', path: '/', builder: dummy),
+        HermesRoute(name: 'home', path: '/', builder: dummy),
       ];
 
       await expectLater(() async {
@@ -1187,80 +1195,80 @@ void main() {
 
     test('empty name', () {
       expect(() {
-        GoRoute(name: '', path: '/');
+        HermesRoute(name: '', path: '/');
       }, throwsA(isAssertionError));
     });
 
     testWidgets('match no routes', (WidgetTester tester) async {
       await expectLater(() async {
-        final List<GoRoute> routes = <GoRoute>[
-          GoRoute(name: 'home', path: '/', builder: dummy),
+        final List<HermesRoute> routes = <HermesRoute>[
+          HermesRoute(name: 'home', path: '/', builder: dummy),
         ];
-        final GoRouter router = await createRouter(routes, tester);
+        final HermesRouter router = await createRouter(routes, tester);
         router.goNamed('work');
       }, throwsA(isAssertionError));
     });
 
     testWidgets('match 2nd top level route', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           name: 'home',
           path: '/',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const HomeScreen(),
         ),
-        GoRoute(
+        HermesRoute(
           name: 'login',
           path: '/login',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const LoginScreen(),
         ),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       router.goNamed('login');
     });
 
     testWidgets('match sub-route', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           name: 'home',
           path: '/',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const HomeScreen(),
-          routes: <GoRoute>[
-            GoRoute(
+          routes: <HermesRoute>[
+            HermesRoute(
               name: 'login',
               path: 'login',
-              builder: (BuildContext context, GoRouterState state) =>
+              builder: (BuildContext context, HermesRouterState state) =>
                   const LoginScreen(),
             ),
           ],
         ),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       router.goNamed('login');
     });
 
     testWidgets('match w/ params', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           name: 'home',
           path: '/',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const HomeScreen(),
-          routes: <GoRoute>[
-            GoRoute(
+          routes: <HermesRoute>[
+            HermesRoute(
               name: 'family',
               path: 'family/:fid',
-              builder: (BuildContext context, GoRouterState state) =>
+              builder: (BuildContext context, HermesRouterState state) =>
                   const FamilyScreen('dummy'),
-              routes: <GoRoute>[
-                GoRoute(
+              routes: <HermesRoute>[
+                HermesRoute(
                   name: 'person',
                   path: 'person/:pid',
-                  builder: (BuildContext context, GoRouterState state) {
+                  builder: (BuildContext context, HermesRouterState state) {
                     expect(state.params,
                         <String, String>{'fid': 'f2', 'pid': 'p1'});
                     return const PersonScreen('dummy', 'dummy');
@@ -1272,29 +1280,29 @@ void main() {
         ),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       router.goNamed('person',
           params: <String, String>{'fid': 'f2', 'pid': 'p1'});
     });
 
     testWidgets('too few params', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           name: 'home',
           path: '/',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const HomeScreen(),
-          routes: <GoRoute>[
-            GoRoute(
+          routes: <HermesRoute>[
+            HermesRoute(
               name: 'family',
               path: 'family/:fid',
-              builder: (BuildContext context, GoRouterState state) =>
+              builder: (BuildContext context, HermesRouterState state) =>
                   const FamilyScreen('dummy'),
-              routes: <GoRoute>[
-                GoRoute(
+              routes: <HermesRoute>[
+                HermesRoute(
                   name: 'person',
                   path: 'person/:pid',
-                  builder: (BuildContext context, GoRouterState state) =>
+                  builder: (BuildContext context, HermesRouterState state) =>
                       const PersonScreen('dummy', 'dummy'),
                 ),
               ],
@@ -1303,7 +1311,7 @@ void main() {
         ),
       ];
       await expectLater(() async {
-        final GoRouter router = await createRouter(routes, tester);
+        final HermesRouter router = await createRouter(routes, tester);
         router.goNamed('person', params: <String, String>{'fid': 'f2'});
         await tester.pump();
       }, throwsA(isAssertionError));
@@ -1311,23 +1319,23 @@ void main() {
 
     testWidgets('match case insensitive w/ params',
         (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           name: 'home',
           path: '/',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const HomeScreen(),
-          routes: <GoRoute>[
-            GoRoute(
+          routes: <HermesRoute>[
+            HermesRoute(
               name: 'family',
               path: 'family/:fid',
-              builder: (BuildContext context, GoRouterState state) =>
+              builder: (BuildContext context, HermesRouterState state) =>
                   const FamilyScreen('dummy'),
-              routes: <GoRoute>[
-                GoRoute(
+              routes: <HermesRoute>[
+                HermesRoute(
                   name: 'PeRsOn',
                   path: 'person/:pid',
-                  builder: (BuildContext context, GoRouterState state) {
+                  builder: (BuildContext context, HermesRouterState state) {
                     expect(state.params,
                         <String, String>{'fid': 'f2', 'pid': 'p1'});
                     return const PersonScreen('dummy', 'dummy');
@@ -1339,59 +1347,60 @@ void main() {
         ),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       router.goNamed('person',
           params: <String, String>{'fid': 'f2', 'pid': 'p1'});
     });
 
     testWidgets('too few params', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           name: 'family',
           path: '/family/:fid',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const FamilyScreen('dummy'),
         ),
       ];
       await expectLater(() async {
-        final GoRouter router = await createRouter(routes, tester);
+        final HermesRouter router = await createRouter(routes, tester);
         router.goNamed('family');
       }, throwsA(isAssertionError));
     });
 
     testWidgets('too many params', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           name: 'family',
           path: '/family/:fid',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const FamilyScreen('dummy'),
         ),
       ];
       await expectLater(() async {
-        final GoRouter router = await createRouter(routes, tester);
+        final HermesRouter router = await createRouter(routes, tester);
         router.goNamed('family',
             params: <String, String>{'fid': 'f2', 'pid': 'p1'});
       }, throwsA(isAssertionError));
     });
 
     testWidgets('sparsely named routes', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           path: '/',
           builder: dummy,
           redirect: (_, __) => '/family/f2',
         ),
-        GoRoute(
+        HermesRoute(
           path: '/family/:fid',
-          builder: (BuildContext context, GoRouterState state) => FamilyScreen(
+          builder: (BuildContext context, HermesRouterState state) =>
+              FamilyScreen(
             state.params['fid']!,
           ),
-          routes: <GoRoute>[
-            GoRoute(
+          routes: <HermesRoute>[
+            HermesRoute(
               name: 'person',
               path: 'person:pid',
-              builder: (BuildContext context, GoRouterState state) =>
+              builder: (BuildContext context, HermesRouterState state) =>
                   PersonScreen(
                 state.params['fid']!,
                 state.params['pid']!,
@@ -1401,7 +1410,7 @@ void main() {
         ),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       router.goNamed('person',
           params: <String, String>{'fid': 'f2', 'pid': 'p1'});
       await tester.pumpAndSettle();
@@ -1411,18 +1420,18 @@ void main() {
     testWidgets('preserve path param spaces and slashes',
         (WidgetTester tester) async {
       const String param1 = 'param w/ spaces and slashes';
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           name: 'page1',
           path: '/page1/:param1',
-          builder: (BuildContext c, GoRouterState s) {
+          builder: (BuildContext c, HermesRouterState s) {
             expect(s.params['param1'], param1);
             return const DummyScreen();
           },
         ),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       final String loc = router
           .namedLocation('page1', params: <String, String>{'param1': param1});
       router.go(loc);
@@ -1436,18 +1445,18 @@ void main() {
     testWidgets('preserve query param spaces and slashes',
         (WidgetTester tester) async {
       const String param1 = 'param w/ spaces and slashes';
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           name: 'page1',
           path: '/page1',
-          builder: (BuildContext c, GoRouterState s) {
+          builder: (BuildContext c, HermesRouterState s) {
             expect(s.queryParams['param1'], param1);
             return const DummyScreen();
           },
         ),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       final String loc = router.namedLocation('page1',
           queryParams: <String, String>{'param1': param1});
       router.go(loc);
@@ -1460,27 +1469,27 @@ void main() {
 
   group('redirects', () {
     testWidgets('top-level redirect', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           path: '/',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const HomeScreen(),
-          routes: <GoRoute>[
-            GoRoute(
+          routes: <HermesRoute>[
+            HermesRoute(
                 path: 'dummy',
-                builder: (BuildContext context, GoRouterState state) =>
+                builder: (BuildContext context, HermesRouterState state) =>
                     const DummyScreen()),
-            GoRoute(
+            HermesRoute(
                 path: 'login',
-                builder: (BuildContext context, GoRouterState state) =>
+                builder: (BuildContext context, HermesRouterState state) =>
                     const LoginScreen()),
           ],
         ),
       ];
       bool redirected = false;
 
-      final GoRouter router = await createRouter(routes, tester,
-          redirect: (BuildContext context, GoRouterState state) {
+      final HermesRouter router = await createRouter(routes, tester,
+          redirect: (BuildContext context, HermesRouterState state) {
         redirected = true;
         return state.subloc == '/login' ? null : '/login';
       });
@@ -1499,24 +1508,24 @@ void main() {
 
     testWidgets('redirect can redirect to same path',
         (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           path: '/',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const HomeScreen(),
-          routes: <GoRoute>[
-            GoRoute(
+          routes: <HermesRoute>[
+            HermesRoute(
                 path: 'dummy',
                 // Return same location.
-                redirect: (_, GoRouterState state) => state.location,
-                builder: (BuildContext context, GoRouterState state) =>
+                redirect: (_, HermesRouterState state) => state.location,
+                builder: (BuildContext context, HermesRouterState state) =>
                     const DummyScreen()),
           ],
         ),
       ];
 
-      final GoRouter router = await createRouter(routes, tester,
-          redirect: (BuildContext context, GoRouterState state) {
+      final HermesRouter router = await createRouter(routes, tester,
+          redirect: (BuildContext context, HermesRouterState state) {
         // Return same location.
         return state.location;
       });
@@ -1530,61 +1539,62 @@ void main() {
 
     testWidgets('top-level redirect w/ named routes',
         (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           name: 'home',
           path: '/',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const HomeScreen(),
-          routes: <GoRoute>[
-            GoRoute(
+          routes: <HermesRoute>[
+            HermesRoute(
               name: 'dummy',
               path: 'dummy',
-              builder: (BuildContext context, GoRouterState state) =>
+              builder: (BuildContext context, HermesRouterState state) =>
                   const DummyScreen(),
             ),
-            GoRoute(
+            HermesRoute(
               name: 'login',
               path: 'login',
-              builder: (BuildContext context, GoRouterState state) =>
+              builder: (BuildContext context, HermesRouterState state) =>
                   const LoginScreen(),
             ),
           ],
         ),
       ];
 
-      final GoRouter router = await createRouter(
+      final HermesRouter router = await createRouter(
         routes,
         tester,
-        redirect: (BuildContext context, GoRouterState state) =>
+        redirect: (BuildContext context, HermesRouterState state) =>
             state.subloc == '/login' ? null : state.namedLocation('login'),
       );
       expect(router.location, '/login');
     });
 
     testWidgets('route-level redirect', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           path: '/',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const HomeScreen(),
-          routes: <GoRoute>[
-            GoRoute(
+          routes: <HermesRoute>[
+            HermesRoute(
               path: 'dummy',
-              builder: (BuildContext context, GoRouterState state) =>
+              builder: (BuildContext context, HermesRouterState state) =>
                   const DummyScreen(),
-              redirect: (BuildContext context, GoRouterState state) => '/login',
+              redirect: (BuildContext context, HermesRouterState state) =>
+                  '/login',
             ),
-            GoRoute(
+            HermesRoute(
               path: 'login',
-              builder: (BuildContext context, GoRouterState state) =>
+              builder: (BuildContext context, HermesRouterState state) =>
                   const LoginScreen(),
             ),
           ],
         ),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       router.go('/dummy');
       await tester.pump();
       expect(router.location, '/login');
@@ -1592,35 +1602,35 @@ void main() {
 
     testWidgets('top-level redirect take priority over route level',
         (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           path: '/',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const HomeScreen(),
-          routes: <GoRoute>[
-            GoRoute(
+          routes: <HermesRoute>[
+            HermesRoute(
                 path: 'dummy',
-                builder: (BuildContext context, GoRouterState state) =>
+                builder: (BuildContext context, HermesRouterState state) =>
                     const DummyScreen(),
-                redirect: (BuildContext context, GoRouterState state) {
+                redirect: (BuildContext context, HermesRouterState state) {
                   // should never be reached.
                   assert(false);
                   return '/dummy2';
                 }),
-            GoRoute(
+            HermesRoute(
                 path: 'dummy2',
-                builder: (BuildContext context, GoRouterState state) =>
+                builder: (BuildContext context, HermesRouterState state) =>
                     const DummyScreen()),
-            GoRoute(
+            HermesRoute(
                 path: 'login',
-                builder: (BuildContext context, GoRouterState state) =>
+                builder: (BuildContext context, HermesRouterState state) =>
                     const LoginScreen()),
           ],
         ),
       ];
       bool redirected = false;
-      final GoRouter router = await createRouter(routes, tester,
-          redirect: (BuildContext context, GoRouterState state) {
+      final HermesRouter router = await createRouter(routes, tester,
+          redirect: (BuildContext context, HermesRouterState state) {
         redirected = true;
         return state.subloc == '/login' ? null : '/login';
       });
@@ -1635,61 +1645,61 @@ void main() {
 
     testWidgets('route-level redirect w/ named routes',
         (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           name: 'home',
           path: '/',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const HomeScreen(),
-          routes: <GoRoute>[
-            GoRoute(
+          routes: <HermesRoute>[
+            HermesRoute(
               name: 'dummy',
               path: 'dummy',
-              builder: (BuildContext context, GoRouterState state) =>
+              builder: (BuildContext context, HermesRouterState state) =>
                   const DummyScreen(),
-              redirect: (BuildContext context, GoRouterState state) =>
+              redirect: (BuildContext context, HermesRouterState state) =>
                   state.namedLocation('login'),
             ),
-            GoRoute(
+            HermesRoute(
               name: 'login',
               path: 'login',
-              builder: (BuildContext context, GoRouterState state) =>
+              builder: (BuildContext context, HermesRouterState state) =>
                   const LoginScreen(),
             ),
           ],
         ),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       router.go('/dummy');
       await tester.pump();
       expect(router.location, '/login');
     });
 
     testWidgets('multiple mixed redirect', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           path: '/',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const HomeScreen(),
-          routes: <GoRoute>[
-            GoRoute(
+          routes: <HermesRoute>[
+            HermesRoute(
               path: 'dummy1',
-              builder: (BuildContext context, GoRouterState state) =>
+              builder: (BuildContext context, HermesRouterState state) =>
                   const DummyScreen(),
             ),
-            GoRoute(
+            HermesRoute(
               path: 'dummy2',
-              builder: (BuildContext context, GoRouterState state) =>
+              builder: (BuildContext context, HermesRouterState state) =>
                   const DummyScreen(),
-              redirect: (BuildContext context, GoRouterState state) => '/',
+              redirect: (BuildContext context, HermesRouterState state) => '/',
             ),
           ],
         ),
       ];
 
-      final GoRouter router = await createRouter(routes, tester,
-          redirect: (BuildContext context, GoRouterState state) =>
+      final HermesRouter router = await createRouter(routes, tester,
+          redirect: (BuildContext context, HermesRouterState state) =>
               state.subloc == '/dummy1' ? '/dummy2' : null);
       router.go('/dummy1');
       await tester.pump();
@@ -1697,8 +1707,8 @@ void main() {
     });
 
     testWidgets('top-level redirect loop', (WidgetTester tester) async {
-      final GoRouter router = await createRouter(<GoRoute>[], tester,
-          redirect: (BuildContext context, GoRouterState state) =>
+      final HermesRouter router = await createRouter(<HermesRoute>[], tester,
+          redirect: (BuildContext context, HermesRouterState state) =>
               state.subloc == '/'
                   ? '/login'
                   : state.subloc == '/login'
@@ -1714,17 +1724,18 @@ void main() {
     });
 
     testWidgets('route-level redirect loop', (WidgetTester tester) async {
-      final GoRouter router = await createRouter(
-        <GoRoute>[
-          GoRoute(
+      final HermesRouter router = await createRouter(
+        <HermesRoute>[
+          HermesRoute(
             path: '/',
             builder: dummy,
-            redirect: (BuildContext context, GoRouterState state) => '/login',
+            redirect: (BuildContext context, HermesRouterState state) =>
+                '/login',
           ),
-          GoRoute(
+          HermesRoute(
             path: '/login',
             builder: dummy,
-            redirect: (BuildContext context, GoRouterState state) => '/',
+            redirect: (BuildContext context, HermesRouterState state) => '/',
           ),
         ],
         tester,
@@ -1739,16 +1750,16 @@ void main() {
     });
 
     testWidgets('mixed redirect loop', (WidgetTester tester) async {
-      final GoRouter router = await createRouter(
-        <GoRoute>[
-          GoRoute(
+      final HermesRouter router = await createRouter(
+        <HermesRoute>[
+          HermesRoute(
             path: '/login',
             builder: dummy,
-            redirect: (BuildContext context, GoRouterState state) => '/',
+            redirect: (BuildContext context, HermesRouterState state) => '/',
           ),
         ],
         tester,
-        redirect: (BuildContext context, GoRouterState state) =>
+        redirect: (BuildContext context, HermesRouterState state) =>
             state.subloc == '/' ? '/login' : null,
       );
 
@@ -1762,10 +1773,10 @@ void main() {
 
     testWidgets('top-level redirect loop w/ query params',
         (WidgetTester tester) async {
-      final GoRouter router = await createRouter(
-        <GoRoute>[],
+      final HermesRouter router = await createRouter(
+        <HermesRoute>[],
         tester,
-        redirect: (BuildContext context, GoRouterState state) =>
+        redirect: (BuildContext context, HermesRouterState state) =>
             state.subloc == '/'
                 ? '/login?from=${state.location}'
                 : state.subloc == '/login'
@@ -1783,20 +1794,20 @@ void main() {
 
     testWidgets('expect null path/fullpath on top-level redirect',
         (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           path: '/',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const HomeScreen(),
         ),
-        GoRoute(
+        HermesRoute(
           path: '/dummy',
           builder: dummy,
-          redirect: (BuildContext context, GoRouterState state) => '/',
+          redirect: (BuildContext context, HermesRouterState state) => '/',
         ),
       ];
 
-      final GoRouter router = await createRouter(
+      final HermesRouter router = await createRouter(
         routes,
         tester,
         initialLocation: '/dummy',
@@ -1805,24 +1816,24 @@ void main() {
     });
 
     testWidgets('top-level redirect state', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           path: '/',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const HomeScreen(),
         ),
-        GoRoute(
+        HermesRoute(
           path: '/login',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const LoginScreen(),
         ),
       ];
 
-      final GoRouter router = await createRouter(
+      final HermesRouter router = await createRouter(
         routes,
         tester,
         initialLocation: '/login?from=/',
-        redirect: (BuildContext context, GoRouterState state) {
+        redirect: (BuildContext context, HermesRouterState state) {
           expect(Uri.parse(state.location).queryParameters, isNotEmpty);
           expect(Uri.parse(state.subloc).queryParameters, isEmpty);
           expect(state.path, isNull);
@@ -1841,10 +1852,10 @@ void main() {
 
     testWidgets('route-level redirect state', (WidgetTester tester) async {
       const String loc = '/book/0';
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           path: '/book/:bookId',
-          redirect: (BuildContext context, GoRouterState state) {
+          redirect: (BuildContext context, HermesRouterState state) {
             expect(state.location, loc);
             expect(state.subloc, loc);
             expect(state.path, '/book/:bookId');
@@ -1853,11 +1864,11 @@ void main() {
             expect(state.queryParams.length, 0);
             return null;
           },
-          builder: (BuildContext c, GoRouterState s) => const HomeScreen(),
+          builder: (BuildContext c, HermesRouterState s) => const HomeScreen(),
         ),
       ];
 
-      final GoRouter router = await createRouter(
+      final HermesRouter router = await createRouter(
         routes,
         tester,
         initialLocation: loc,
@@ -1870,24 +1881,25 @@ void main() {
 
     testWidgets('sub-sub-route-level redirect params',
         (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           path: '/',
-          builder: (BuildContext c, GoRouterState s) => const HomeScreen(),
-          routes: <GoRoute>[
-            GoRoute(
+          builder: (BuildContext c, HermesRouterState s) => const HomeScreen(),
+          routes: <HermesRoute>[
+            HermesRoute(
               path: 'family/:fid',
-              builder: (BuildContext c, GoRouterState s) =>
+              builder: (BuildContext c, HermesRouterState s) =>
                   FamilyScreen(s.params['fid']!),
-              routes: <GoRoute>[
-                GoRoute(
+              routes: <HermesRoute>[
+                HermesRoute(
                   path: 'person/:pid',
-                  redirect: (BuildContext context, GoRouterState s) {
+                  redirect: (BuildContext context, HermesRouterState s) {
                     expect(s.params['fid'], 'f2');
                     expect(s.params['pid'], 'p1');
                     return null;
                   },
-                  builder: (BuildContext c, GoRouterState s) => PersonScreen(
+                  builder: (BuildContext c, HermesRouterState s) =>
+                      PersonScreen(
                     s.params['fid']!,
                     s.params['pid']!,
                   ),
@@ -1898,7 +1910,7 @@ void main() {
         ),
       ];
 
-      final GoRouter router = await createRouter(
+      final HermesRouter router = await createRouter(
         routes,
         tester,
         initialLocation: '/family/f2/person/p1',
@@ -1915,10 +1927,10 @@ void main() {
     });
 
     testWidgets('redirect limit', (WidgetTester tester) async {
-      final GoRouter router = await createRouter(
-        <GoRoute>[],
+      final HermesRouter router = await createRouter(
+        <HermesRoute>[],
         tester,
-        redirect: (BuildContext context, GoRouterState state) =>
+        redirect: (BuildContext context, HermesRouterState state) =>
             '/${state.location}+',
         redirectLimit: 10,
       );
@@ -1935,34 +1947,34 @@ void main() {
       bool isCallTopRedirect = false;
       bool isCallRouteRedirect = false;
 
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           name: 'home',
           path: '/',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const HomeScreen(),
-          routes: <GoRoute>[
-            GoRoute(
+          routes: <HermesRoute>[
+            HermesRoute(
               name: 'login',
               path: 'login',
-              builder: (BuildContext context, GoRouterState state) {
+              builder: (BuildContext context, HermesRouterState state) {
                 return const LoginScreen();
               },
-              redirect: (BuildContext context, GoRouterState state) {
+              redirect: (BuildContext context, HermesRouterState state) {
                 isCallRouteRedirect = true;
                 expect(state.extra, isNotNull);
                 return null;
               },
-              routes: const <GoRoute>[],
+              routes: const <HermesRoute>[],
             ),
           ],
         ),
       ];
 
-      final GoRouter router = await createRouter(
+      final HermesRouter router = await createRouter(
         routes,
         tester,
-        redirect: (BuildContext context, GoRouterState state) {
+        redirect: (BuildContext context, HermesRouterState state) {
           if (state.location == '/login') {
             isCallTopRedirect = true;
             expect(state.extra, isNotNull);
@@ -1981,42 +1993,42 @@ void main() {
 
     testWidgets('parent route level redirect take priority over child',
         (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           path: '/',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const HomeScreen(),
-          routes: <GoRoute>[
-            GoRoute(
+          routes: <HermesRoute>[
+            HermesRoute(
                 path: 'dummy',
-                builder: (BuildContext context, GoRouterState state) =>
+                builder: (BuildContext context, HermesRouterState state) =>
                     const DummyScreen(),
-                redirect: (BuildContext context, GoRouterState state) =>
+                redirect: (BuildContext context, HermesRouterState state) =>
                     '/other',
-                routes: <GoRoute>[
-                  GoRoute(
+                routes: <HermesRoute>[
+                  HermesRoute(
                     path: 'dummy2',
-                    builder: (BuildContext context, GoRouterState state) =>
+                    builder: (BuildContext context, HermesRouterState state) =>
                         const DummyScreen(),
-                    redirect: (BuildContext context, GoRouterState state) {
+                    redirect: (BuildContext context, HermesRouterState state) {
                       assert(false);
                       return '/other2';
                     },
                   ),
                 ]),
-            GoRoute(
+            HermesRoute(
                 path: 'other',
-                builder: (BuildContext context, GoRouterState state) =>
+                builder: (BuildContext context, HermesRouterState state) =>
                     const DummyScreen()),
-            GoRoute(
+            HermesRoute(
                 path: 'other2',
-                builder: (BuildContext context, GoRouterState state) =>
+                builder: (BuildContext context, HermesRouterState state) =>
                     const DummyScreen()),
           ],
         ),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
 
       // Directly set the url through platform message.
       await sendPlatformUrl('/dummy/dummy2');
@@ -2028,22 +2040,22 @@ void main() {
 
   group('initial location', () {
     testWidgets('initial location', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           path: '/',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const HomeScreen(),
-          routes: <GoRoute>[
-            GoRoute(
+          routes: <HermesRoute>[
+            HermesRoute(
               path: 'dummy',
-              builder: (BuildContext context, GoRouterState state) =>
+              builder: (BuildContext context, HermesRouterState state) =>
                   const DummyScreen(),
             ),
           ],
         ),
       ];
 
-      final GoRouter router = await createRouter(
+      final HermesRouter router = await createRouter(
         routes,
         tester,
         initialLocation: '/dummy',
@@ -2051,21 +2063,48 @@ void main() {
       expect(router.location, '/dummy');
     });
 
-    testWidgets('initial location w/ redirection', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+    testWidgets('initial location with extra', (WidgetTester tester) async {
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           path: '/',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const HomeScreen(),
-        ),
-        GoRoute(
-          path: '/dummy',
-          builder: dummy,
-          redirect: (BuildContext context, GoRouterState state) => '/',
+          routes: <HermesRoute>[
+            HermesRoute(
+              path: 'dummy',
+              builder: (BuildContext context, HermesRouterState state) {
+                return DummyScreen(key: ValueKey<Object?>(state.extra));
+              },
+            ),
+          ],
         ),
       ];
 
-      final GoRouter router = await createRouter(
+      final HermesRouter router = await createRouter(
+        routes,
+        tester,
+        initialLocation: '/dummy',
+        initialExtra: 'extra',
+      );
+      expect(router.location, '/dummy');
+      expect(find.byKey(const ValueKey<Object?>('extra')), findsOneWidget);
+    });
+
+    testWidgets('initial location w/ redirection', (WidgetTester tester) async {
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
+          path: '/',
+          builder: (BuildContext context, HermesRouterState state) =>
+              const HomeScreen(),
+        ),
+        HermesRoute(
+          path: '/dummy',
+          builder: dummy,
+          redirect: (BuildContext context, HermesRouterState state) => '/',
+        ),
+      ];
+
+      final HermesRouter router = await createRouter(
         routes,
         tester,
         initialLocation: '/dummy',
@@ -2079,22 +2118,22 @@ void main() {
       TestWidgetsFlutterBinding
           .instance.platformDispatcher.defaultRouteNameTestValue = '/dummy';
 
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           path: '/',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const HomeScreen(),
-          routes: <GoRoute>[
-            GoRoute(
+          routes: <HermesRoute>[
+            HermesRoute(
               path: 'dummy',
-              builder: (BuildContext context, GoRouterState state) =>
+              builder: (BuildContext context, HermesRouterState state) =>
                   const DummyScreen(),
             ),
           ],
         ),
       ];
 
-      final GoRouter router = await createRouter(
+      final HermesRouter router = await createRouter(
         routes,
         tester,
       );
@@ -2102,24 +2141,40 @@ void main() {
       TestWidgetsFlutterBinding
           .instance.platformDispatcher.defaultRouteNameTestValue = '/';
     });
+
+    test('throws assertion if initialExtra is set w/o initialLocation', () {
+      expect(
+        () => HermesRouter(
+          routes: const <HermesRoute>[],
+          initialExtra: 1,
+        ),
+        throwsA(
+          isA<AssertionError>().having(
+            (AssertionError e) => e.message,
+            'error message',
+            'initialLocation must be set in order to use initialExtra',
+          ),
+        ),
+      );
+    });
   });
 
   group('params', () {
     testWidgets('preserve path param case', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           path: '/',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const HomeScreen(),
         ),
-        GoRoute(
+        HermesRoute(
           path: '/family/:fid',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               FamilyScreen(state.params['fid']!),
         ),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       for (final String fid in <String>['f2', 'F2']) {
         final String loc = '/family/$fid';
         router.go(loc);
@@ -2134,21 +2189,22 @@ void main() {
     });
 
     testWidgets('preserve query param case', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           path: '/',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const HomeScreen(),
         ),
-        GoRoute(
+        HermesRoute(
           path: '/family',
-          builder: (BuildContext context, GoRouterState state) => FamilyScreen(
+          builder: (BuildContext context, HermesRouterState state) =>
+              FamilyScreen(
             state.queryParams['fid']!,
           ),
         ),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       for (final String fid in <String>['f2', 'F2']) {
         final String loc = '/family?fid=$fid';
         router.go(loc);
@@ -2165,17 +2221,17 @@ void main() {
     testWidgets('preserve path param spaces and slashes',
         (WidgetTester tester) async {
       const String param1 = 'param w/ spaces and slashes';
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           path: '/page1/:param1',
-          builder: (BuildContext c, GoRouterState s) {
+          builder: (BuildContext c, HermesRouterState s) {
             expect(s.params['param1'], param1);
             return const DummyScreen();
           },
         ),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       final String loc = '/page1/${Uri.encodeComponent(param1)}';
       router.go(loc);
       await tester.pumpAndSettle();
@@ -2188,17 +2244,17 @@ void main() {
     testWidgets('preserve query param spaces and slashes',
         (WidgetTester tester) async {
       const String param1 = 'param w/ spaces and slashes';
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           path: '/page1',
-          builder: (BuildContext c, GoRouterState s) {
+          builder: (BuildContext c, HermesRouterState s) {
             expect(s.queryParams['param1'], param1);
             return const DummyScreen();
           },
         ),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       router.go('/page1?param1=$param1');
       await tester.pumpAndSettle();
 
@@ -2217,14 +2273,14 @@ void main() {
 
     test('error: duplicate path param', () {
       try {
-        GoRouter(
-          routes: <GoRoute>[
-            GoRoute(
+        HermesRouter(
+          routes: <HermesRoute>[
+            HermesRoute(
               path: '/:id/:blah/:bam/:id/:blah',
               builder: dummy,
             ),
           ],
-          errorBuilder: (BuildContext context, GoRouterState state) =>
+          errorBuilder: (BuildContext context, HermesRouterState state) =>
               TestErrorScreen(state.error!),
           initialLocation: '/0/1/2/0/1',
         );
@@ -2235,11 +2291,11 @@ void main() {
     });
 
     testWidgets('duplicate query param', (WidgetTester tester) async {
-      final GoRouter router = await createRouter(
-        <GoRoute>[
-          GoRoute(
+      final HermesRouter router = await createRouter(
+        <HermesRoute>[
+          HermesRoute(
             path: '/',
-            builder: (BuildContext context, GoRouterState state) {
+            builder: (BuildContext context, HermesRouterState state) {
               log.info('id= ${state.params['id']}');
               expect(state.params.length, 0);
               expect(state.queryParams.length, 1);
@@ -2258,11 +2314,11 @@ void main() {
     });
 
     testWidgets('duplicate path + query param', (WidgetTester tester) async {
-      final GoRouter router = await createRouter(
-        <GoRoute>[
-          GoRoute(
+      final HermesRouter router = await createRouter(
+        <HermesRoute>[
+          HermesRoute(
             path: '/:id',
-            builder: (BuildContext context, GoRouterState state) {
+            builder: (BuildContext context, HermesRouterState state) {
               expect(state.params, <String, String>{'id': '0'});
               expect(state.queryParams, <String, String>{'id': '1'});
               return const HomeScreen();
@@ -2281,19 +2337,19 @@ void main() {
     });
 
     testWidgets('push + query param', (WidgetTester tester) async {
-      final GoRouter router = await createRouter(
-        <GoRoute>[
-          GoRoute(path: '/', builder: dummy),
-          GoRoute(
+      final HermesRouter router = await createRouter(
+        <HermesRoute>[
+          HermesRoute(path: '/', builder: dummy),
+          HermesRoute(
             path: '/family',
-            builder: (BuildContext context, GoRouterState state) =>
+            builder: (BuildContext context, HermesRouterState state) =>
                 FamilyScreen(
               state.queryParams['fid']!,
             ),
           ),
-          GoRoute(
+          HermesRoute(
             path: '/person',
-            builder: (BuildContext context, GoRouterState state) =>
+            builder: (BuildContext context, HermesRouterState state) =>
                 PersonScreen(
               state.queryParams['fid']!,
               state.queryParams['pid']!,
@@ -2318,19 +2374,19 @@ void main() {
     });
 
     testWidgets('push + extra param', (WidgetTester tester) async {
-      final GoRouter router = await createRouter(
-        <GoRoute>[
-          GoRoute(path: '/', builder: dummy),
-          GoRoute(
+      final HermesRouter router = await createRouter(
+        <HermesRoute>[
+          HermesRoute(path: '/', builder: dummy),
+          HermesRoute(
             path: '/family',
-            builder: (BuildContext context, GoRouterState state) =>
+            builder: (BuildContext context, HermesRouterState state) =>
                 FamilyScreen(
               (state.extra! as Map<String, String>)['fid']!,
             ),
           ),
-          GoRoute(
+          HermesRoute(
             path: '/person',
-            builder: (BuildContext context, GoRouterState state) =>
+            builder: (BuildContext context, HermesRouterState state) =>
                 PersonScreen(
               (state.extra! as Map<String, String>)['fid']!,
               (state.extra! as Map<String, String>)['pid']!,
@@ -2355,20 +2411,20 @@ void main() {
     });
 
     testWidgets('keep param in nested route', (WidgetTester tester) async {
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           path: '/',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const HomeScreen(),
         ),
-        GoRoute(
+        HermesRoute(
           path: '/family/:fid',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               FamilyScreen(state.params['fid']!),
-          routes: <GoRoute>[
-            GoRoute(
+          routes: <HermesRoute>[
+            HermesRoute(
               path: 'person/:pid',
-              builder: (BuildContext context, GoRouterState state) {
+              builder: (BuildContext context, HermesRouterState state) {
                 final String fid = state.params['fid']!;
                 final String pid = state.params['pid']!;
 
@@ -2379,7 +2435,7 @@ void main() {
         ),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
       const String fid = 'f1';
       const String pid = 'p2';
       const String loc = '/family/$fid/person/$pid';
@@ -2391,8 +2447,8 @@ void main() {
       expect(router.location, loc);
       expect(matches.matches, hasLength(2));
       expect(find.byType(PersonScreen), findsOneWidget);
-      final ImperativeRouteMatch imperativeRouteMatch =
-          matches.matches.last as ImperativeRouteMatch;
+      final ImperativeRouteMatch<Object?> imperativeRouteMatch =
+          matches.matches.last as ImperativeRouteMatch<Object?>;
       expect(imperativeRouteMatch.matches.pathParameters['fid'], fid);
       expect(imperativeRouteMatch.matches.pathParameters['pid'], pid);
     });
@@ -2409,16 +2465,16 @@ void main() {
         expect(uri.queryParametersAll, queryParametersAll);
       }
 
-      final List<GoRoute> routes = <GoRoute>[
-        GoRoute(
+      final List<HermesRoute> routes = <HermesRoute>[
+        HermesRoute(
           path: '/',
-          builder: (BuildContext context, GoRouterState state) =>
+          builder: (BuildContext context, HermesRouterState state) =>
               const HomeScreen(),
         ),
-        GoRoute(
+        HermesRoute(
           name: 'page',
           path: '/page',
-          builder: (BuildContext context, GoRouterState state) {
+          builder: (BuildContext context, HermesRouterState state) {
             expect(state.queryParametersAll, queryParametersAll);
             expectLocationWithQueryParams(state.location);
             return DummyScreen(
@@ -2428,7 +2484,7 @@ void main() {
         ),
       ];
 
-      final GoRouter router = await createRouter(routes, tester);
+      final HermesRouter router = await createRouter(routes, tester);
 
       router.goNamed('page', queryParams: const <String, dynamic>{
         'q1': 'v1',
@@ -2462,16 +2518,16 @@ void main() {
       expect(uri.queryParametersAll, queryParametersAll);
     }
 
-    final List<GoRoute> routes = <GoRoute>[
-      GoRoute(
+    final List<HermesRoute> routes = <HermesRoute>[
+      HermesRoute(
         path: '/',
-        builder: (BuildContext context, GoRouterState state) =>
+        builder: (BuildContext context, HermesRouterState state) =>
             const HomeScreen(),
       ),
-      GoRoute(
+      HermesRoute(
         name: 'page',
         path: '/page',
-        builder: (BuildContext context, GoRouterState state) {
+        builder: (BuildContext context, HermesRouterState state) {
           expect(state.queryParametersAll, queryParametersAll);
           expectLocationWithQueryParams(state.location);
           return DummyScreen(
@@ -2481,7 +2537,7 @@ void main() {
       ),
     ];
 
-    final GoRouter router = await createRouter(routes, tester);
+    final HermesRouter router = await createRouter(routes, tester);
 
     router.go('/page?q1=v1&q2=v2&q2=v3');
     await tester.pumpAndSettle();
@@ -2511,16 +2567,16 @@ void main() {
       expect(uri.queryParametersAll, queryParametersAll);
     }
 
-    final List<GoRoute> routes = <GoRoute>[
-      GoRoute(
+    final List<HermesRoute> routes = <HermesRoute>[
+      HermesRoute(
         path: '/',
-        builder: (BuildContext context, GoRouterState state) =>
+        builder: (BuildContext context, HermesRouterState state) =>
             const HomeScreen(),
       ),
-      GoRoute(
+      HermesRoute(
         name: 'page',
         path: '/page',
-        builder: (BuildContext context, GoRouterState state) {
+        builder: (BuildContext context, HermesRouterState state) {
           expect(state.queryParametersAll, queryParametersAll);
           expectLocationWithQueryParams(state.location);
           return DummyScreen(
@@ -2530,7 +2586,7 @@ void main() {
       ),
     ];
 
-    final GoRouter router = await createRouter(routes, tester);
+    final HermesRouter router = await createRouter(routes, tester);
 
     router.go('/page?q1=v1&q2=v2&q2=v3');
     await tester.pumpAndSettle();
@@ -2548,20 +2604,20 @@ void main() {
     );
   });
 
-  group('GoRouterHelper extensions', () {
+  group('HermesRouterHelper extensions', () {
     final GlobalKey<DummyStatefulWidgetState> key =
         GlobalKey<DummyStatefulWidgetState>();
-    final List<GoRoute> routes = <GoRoute>[
-      GoRoute(
+    final List<HermesRoute> routes = <HermesRoute>[
+      HermesRoute(
         path: '/',
         name: 'home',
-        builder: (BuildContext context, GoRouterState state) =>
+        builder: (BuildContext context, HermesRouterState state) =>
             DummyStatefulWidget(key: key),
       ),
-      GoRoute(
+      HermesRoute(
         path: '/page1',
         name: 'page1',
-        builder: (BuildContext context, GoRouterState state) =>
+        builder: (BuildContext context, HermesRouterState state) =>
             const Page1Screen(),
       ),
     ];
@@ -2576,14 +2632,14 @@ void main() {
     const String location = '/page1';
     const String extra = 'Hello';
 
-    testWidgets('calls [namedLocation] on closest GoRouter',
+    testWidgets('calls [namedLocation] on closest HermesRouter',
         (WidgetTester tester) async {
-      final GoRouterNamedLocationSpy router =
-          GoRouterNamedLocationSpy(routes: routes);
+      final HermesRouterNamedLocationSpy router =
+          HermesRouterNamedLocationSpy(routes: routes);
       await tester.pumpWidget(
         MaterialApp.router(
           routerConfig: router,
-          title: 'GoRouter Example',
+          title: 'HermesRouter Example',
         ),
       );
       key.currentContext!.namedLocation(
@@ -2596,12 +2652,14 @@ void main() {
       expect(router.queryParams, queryParams);
     });
 
-    testWidgets('calls [go] on closest GoRouter', (WidgetTester tester) async {
-      final GoRouterGoSpy router = GoRouterGoSpy(routes: routes);
+    testWidgets('calls [go] on closest HermesRouter',
+        (WidgetTester tester) async {
+      final HermesRouterHermesSpy router =
+          HermesRouterHermesSpy(routes: routes);
       await tester.pumpWidget(
         MaterialApp.router(
           routerConfig: router,
-          title: 'GoRouter Example',
+          title: 'HermesRouter Example',
         ),
       );
       key.currentContext!.go(
@@ -2612,13 +2670,14 @@ void main() {
       expect(router.extra, extra);
     });
 
-    testWidgets('calls [goNamed] on closest GoRouter',
+    testWidgets('calls [goNamed] on closest HermesRouter',
         (WidgetTester tester) async {
-      final GoRouterGoNamedSpy router = GoRouterGoNamedSpy(routes: routes);
+      final HermesRouterHermesNamedSpy router =
+          HermesRouterHermesNamedSpy(routes: routes);
       await tester.pumpWidget(
         MaterialApp.router(
           routerConfig: router,
-          title: 'GoRouter Example',
+          title: 'HermesRouter Example',
         ),
       );
       key.currentContext!.goNamed(
@@ -2633,13 +2692,13 @@ void main() {
       expect(router.extra, extra);
     });
 
-    testWidgets('calls [push] on closest GoRouter',
+    testWidgets('calls [push] on closest HermesRouter',
         (WidgetTester tester) async {
-      final GoRouterPushSpy router = GoRouterPushSpy(routes: routes);
+      final HermesRouterPushSpy router = HermesRouterPushSpy(routes: routes);
       await tester.pumpWidget(
         MaterialApp.router(
           routerConfig: router,
-          title: 'GoRouter Example',
+          title: 'HermesRouter Example',
         ),
       );
       key.currentContext!.push(
@@ -2650,13 +2709,34 @@ void main() {
       expect(router.extra, extra);
     });
 
-    testWidgets('calls [pushNamed] on closest GoRouter',
+    testWidgets('calls [push] on closest HermesRouter and waits for result',
         (WidgetTester tester) async {
-      final GoRouterPushNamedSpy router = GoRouterPushNamedSpy(routes: routes);
+      final HermesRouterPushSpy router = HermesRouterPushSpy(routes: routes);
+      await tester.pumpWidget(
+        MaterialApp.router(
+          routeInformationProvider: router.routeInformationProvider,
+          routeInformationParser: router.routeInformationParser,
+          routerDelegate: router.routerDelegate,
+          title: 'HermesRouter Example',
+        ),
+      );
+      final String? result = await router.push<String>(
+        location,
+        extra: extra,
+      );
+      expect(result, extra);
+      expect(router.myLocation, location);
+      expect(router.extra, extra);
+    });
+
+    testWidgets('calls [pushNamed] on closest HermesRouter',
+        (WidgetTester tester) async {
+      final HermesRouterPushNamedSpy router =
+          HermesRouterPushNamedSpy(routes: routes);
       await tester.pumpWidget(
         MaterialApp.router(
           routerConfig: router,
-          title: 'GoRouter Example',
+          title: 'HermesRouter Example',
         ),
       );
       key.currentContext!.pushNamed(
@@ -2671,16 +2751,58 @@ void main() {
       expect(router.extra, extra);
     });
 
-    testWidgets('calls [pop] on closest GoRouter', (WidgetTester tester) async {
-      final GoRouterPopSpy router = GoRouterPopSpy(routes: routes);
+    testWidgets(
+        'calls [pushNamed] on closest HermesRouter and waits for result',
+        (WidgetTester tester) async {
+      final HermesRouterPushNamedSpy router =
+          HermesRouterPushNamedSpy(routes: routes);
+      await tester.pumpWidget(
+        MaterialApp.router(
+          routeInformationProvider: router.routeInformationProvider,
+          routeInformationParser: router.routeInformationParser,
+          routerDelegate: router.routerDelegate,
+          title: 'HermesRouter Example',
+        ),
+      );
+      final String? result = await router.pushNamed<String>(
+        name,
+        params: params,
+        queryParams: queryParams,
+        extra: extra,
+      );
+      expect(result, extra);
+      expect(router.extra, extra);
+      expect(router.name, name);
+      expect(router.params, params);
+      expect(router.queryParams, queryParams);
+    });
+
+    testWidgets('calls [pop] on closest HermesRouter',
+        (WidgetTester tester) async {
+      final HermesRouterPopSpy router = HermesRouterPopSpy(routes: routes);
       await tester.pumpWidget(
         MaterialApp.router(
           routerConfig: router,
-          title: 'GoRouter Example',
+          title: 'HermesRouter Example',
         ),
       );
       key.currentContext!.pop();
       expect(router.popped, true);
+      expect(router.poppedResult, null);
+    });
+
+    testWidgets('calls [pop] on closest HermesRouter with result',
+        (WidgetTester tester) async {
+      final HermesRouterPopSpy router = HermesRouterPopSpy(routes: routes);
+      await tester.pumpWidget(
+        MaterialApp.router(
+          routerConfig: router,
+          title: 'HermesRouter Example',
+        ),
+      );
+      key.currentContext!.pop('result');
+      expect(router.popped, true);
+      expect(router.poppedResult, 'result');
     });
   });
 
@@ -2688,23 +2810,24 @@ void main() {
     testWidgets('defaultRoute', (WidgetTester tester) async {
       final List<RouteBase> routes = <RouteBase>[
         ShellRoute(
-          builder: (BuildContext context, GoRouterState state, Widget child) {
+          builder:
+              (BuildContext context, HermesRouterState state, Widget child) {
             return Scaffold(
               body: child,
             );
           },
           routes: <RouteBase>[
-            GoRoute(
+            HermesRoute(
               path: '/a',
-              builder: (BuildContext context, GoRouterState state) {
+              builder: (BuildContext context, HermesRouterState state) {
                 return const Scaffold(
                   body: Text('Screen A'),
                 );
               },
             ),
-            GoRoute(
+            HermesRoute(
               path: '/b',
-              builder: (BuildContext context, GoRouterState state) {
+              builder: (BuildContext context, HermesRouterState state) {
                 return const Scaffold(
                   body: Text('Screen B'),
                 );
@@ -2723,7 +2846,8 @@ void main() {
         (WidgetTester tester) async {
       final List<RouteBase> routes = <RouteBase>[
         ShellRoute(
-          builder: (BuildContext context, GoRouterState state, Widget child) {
+          builder:
+              (BuildContext context, HermesRouterState state, Widget child) {
             return Scaffold(
               body: Column(
                 children: <Widget>[
@@ -2734,17 +2858,17 @@ void main() {
             );
           },
           routes: <RouteBase>[
-            GoRoute(
+            HermesRoute(
               path: '/b',
-              builder: (BuildContext context, GoRouterState state) {
+              builder: (BuildContext context, HermesRouterState state) {
                 return const Scaffold(
                   body: Text('Screen B'),
                 );
               },
               routes: <RouteBase>[
-                GoRoute(
+                HermesRoute(
                   path: 'c',
-                  builder: (BuildContext context, GoRouterState state) {
+                  builder: (BuildContext context, HermesRouterState state) {
                     return const Scaffold(
                       body: Text('Screen C'),
                     );
@@ -2780,7 +2904,8 @@ void main() {
       final List<RouteBase> routes = <RouteBase>[
         ShellRoute(
           navigatorKey: shellNavigatorKey,
-          builder: (BuildContext context, GoRouterState state, Widget child) {
+          builder:
+              (BuildContext context, HermesRouterState state, Widget child) {
             return Scaffold(
               body: Column(
                 children: <Widget>[
@@ -2791,18 +2916,18 @@ void main() {
             );
           },
           routes: <RouteBase>[
-            GoRoute(
+            HermesRoute(
               path: '/b',
-              builder: (BuildContext context, GoRouterState state) {
+              builder: (BuildContext context, HermesRouterState state) {
                 return const Scaffold(
                   body: Text('Screen B'),
                 );
               },
               routes: <RouteBase>[
-                GoRoute(
+                HermesRoute(
                   path: 'c',
                   parentNavigatorKey: rootNavigatorKey,
-                  builder: (BuildContext context, GoRouterState state) {
+                  builder: (BuildContext context, HermesRouterState state) {
                     return const Scaffold(
                       body: Text('Screen C'),
                     );
@@ -2836,11 +2961,11 @@ void main() {
         (WidgetTester tester) async {
           final GlobalKey<NavigatorState> navigatorKey =
               GlobalKey<NavigatorState>();
-          final GoRouter router = GoRouter(
+          final HermesRouter router = HermesRouter(
             initialLocation: '/',
             navigatorKey: navigatorKey,
-            routes: <GoRoute>[
-              GoRoute(
+            routes: <HermesRoute>[
+              HermesRoute(
                 path: '/',
                 builder: (BuildContext context, _) {
                   return Scaffold(
@@ -2861,7 +2986,7 @@ void main() {
                   );
                 },
               ),
-              GoRoute(path: '/a', builder: (_, __) => const DummyScreen()),
+              HermesRoute(path: '/a', builder: (_, __) => const DummyScreen()),
             ],
           );
 
@@ -2888,20 +3013,20 @@ void main() {
         (WidgetTester tester) async {
           final GlobalKey<NavigatorState> shellNavigatorKey =
               GlobalKey<NavigatorState>();
-          final GoRouter router = GoRouter(
+          final HermesRouter router = HermesRouter(
             initialLocation: '/a',
             routes: <RouteBase>[
               ShellRoute(
                 navigatorKey: shellNavigatorKey,
-                builder:
-                    (BuildContext context, GoRouterState state, Widget child) {
+                builder: (BuildContext context, HermesRouterState state,
+                    Widget child) {
                   return Scaffold(
                     appBar: AppBar(title: const Text('Shell')),
                     body: child,
                   );
                 },
-                routes: <GoRoute>[
-                  GoRoute(
+                routes: <HermesRoute>[
+                  HermesRoute(
                     path: '/a',
                     builder: (BuildContext context, _) {
                       return Scaffold(
@@ -2951,20 +3076,20 @@ void main() {
         (WidgetTester tester) async {
           final GlobalKey<NavigatorState> shellNavigatorKey =
               GlobalKey<NavigatorState>();
-          final GoRouter router = GoRouter(
+          final HermesRouter router = HermesRouter(
             initialLocation: '/a',
             routes: <RouteBase>[
               ShellRoute(
                 navigatorKey: shellNavigatorKey,
-                builder:
-                    (BuildContext context, GoRouterState state, Widget child) {
+                builder: (BuildContext context, HermesRouterState state,
+                    Widget child) {
                   return Scaffold(
                     appBar: AppBar(title: const Text('Shell')),
                     body: child,
                   );
                 },
-                routes: <GoRoute>[
-                  GoRoute(
+                routes: <HermesRoute>[
+                  HermesRoute(
                     path: '/a',
                     builder: (BuildContext context, _) {
                       return Scaffold(
@@ -3015,13 +3140,13 @@ void main() {
         final GlobalKey<NavigatorState> shell =
             GlobalKey<NavigatorState>(debugLabel: 'shell');
 
-        final GoRouter router = GoRouter(
+        final HermesRouter router = HermesRouter(
           navigatorKey: root,
           routes: <RouteBase>[
             ShellRoute(
               navigatorKey: shell,
-              builder:
-                  (BuildContext context, GoRouterState state, Widget child) {
+              builder: (BuildContext context, HermesRouterState state,
+                  Widget child) {
                 return Scaffold(
                   body: Center(
                     child: Column(
@@ -3034,7 +3159,7 @@ void main() {
                 );
               },
               routes: <RouteBase>[
-                GoRoute(
+                HermesRoute(
                   path: '/',
                   builder: (_, __) => const Text('A Screen'),
                 ),
@@ -3066,11 +3191,11 @@ void main() {
           final GlobalKey<NavigatorState> shell =
               GlobalKey<NavigatorState>(debugLabel: 'shell');
 
-          final GoRouter router = GoRouter(
+          final HermesRouter router = HermesRouter(
             initialLocation: '/a/b',
             navigatorKey: root,
-            routes: <GoRoute>[
-              GoRoute(
+            routes: <HermesRoute>[
+              HermesRoute(
                 path: '/',
                 builder: (BuildContext context, _) {
                   return const Scaffold(
@@ -3080,7 +3205,7 @@ void main() {
                 routes: <RouteBase>[
                   ShellRoute(
                     navigatorKey: shell,
-                    builder: (BuildContext context, GoRouterState state,
+                    builder: (BuildContext context, HermesRouterState state,
                         Widget child) {
                       return Scaffold(
                         body: Center(
@@ -3094,11 +3219,11 @@ void main() {
                       );
                     },
                     routes: <RouteBase>[
-                      GoRoute(
+                      HermesRoute(
                         path: 'a',
                         builder: (_, __) => const Text('A Screen'),
                         routes: <RouteBase>[
-                          GoRoute(
+                          HermesRoute(
                             parentNavigatorKey: root,
                             path: 'b',
                             builder: (_, __) => const Text('B Screen'),
@@ -3143,11 +3268,11 @@ void main() {
         final GlobalKey<NavigatorState> shell =
             GlobalKey<NavigatorState>(debugLabel: 'shell');
 
-        final GoRouter router = GoRouter(
+        final HermesRouter router = HermesRouter(
           initialLocation: '/a',
           navigatorKey: root,
-          routes: <GoRoute>[
-            GoRoute(
+          routes: <HermesRoute>[
+            HermesRoute(
               path: '/',
               builder: (BuildContext context, _) {
                 return const Scaffold(
@@ -3157,7 +3282,7 @@ void main() {
               routes: <RouteBase>[
                 ShellRoute(
                   navigatorKey: shell,
-                  builder: (BuildContext context, GoRouterState state,
+                  builder: (BuildContext context, HermesRouterState state,
                       Widget child) {
                     return Scaffold(
                       body: Center(
@@ -3171,7 +3296,7 @@ void main() {
                     );
                   },
                   routes: <RouteBase>[
-                    GoRoute(
+                    HermesRoute(
                       path: 'a',
                       builder: (_, __) => const Text('A Screen'),
                     ),
@@ -3203,6 +3328,125 @@ void main() {
         final bool? result = await resultFuture;
         expect(result, isTrue);
       });
+
+      testWidgets('Triggers a Hero inside a ShellRoute',
+          (WidgetTester tester) async {
+        final UniqueKey heroKey = UniqueKey();
+        const String kHeroTag = 'hero';
+
+        final List<RouteBase> routes = <RouteBase>[
+          ShellRoute(
+            builder:
+                (BuildContext context, HermesRouterState state, Widget child) {
+              return child;
+            },
+            routes: <HermesRoute>[
+              HermesRoute(
+                  path: '/a',
+                  builder: (BuildContext context, _) {
+                    return Hero(
+                      tag: kHeroTag,
+                      child: Container(),
+                      flightShuttleBuilder: (_, __, ___, ____, _____) {
+                        return Container(key: heroKey);
+                      },
+                    );
+                  }),
+              HermesRoute(
+                  path: '/b',
+                  builder: (BuildContext context, _) {
+                    return Hero(
+                      tag: kHeroTag,
+                      child: Container(),
+                    );
+                  }),
+            ],
+          )
+        ];
+        final HermesRouter router =
+            await createRouter(routes, tester, initialLocation: '/a');
+
+        // check that flightShuttleBuilder widget is not yet present
+        expect(find.byKey(heroKey), findsNothing);
+
+        // start navigation
+        router.go('/b');
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 10));
+        // check that flightShuttleBuilder widget is visible
+        expect(find.byKey(heroKey), isOnstage);
+        // // Waits for the animation finishes.
+        await tester.pumpAndSettle();
+        expect(find.byKey(heroKey), findsNothing);
+      });
     });
   });
+
+  group('of', () {
+    testWidgets(
+      'It should return the go router instance of the widget tree',
+      (WidgetTester tester) async {
+        const Key key = Key('key');
+        final List<RouteBase> routes = <RouteBase>[
+          HermesRoute(
+            path: '/',
+            builder: (_, __) => const SizedBox(key: key),
+          ),
+        ];
+
+        final HermesRouter router = await createRouter(routes, tester);
+        final Element context = tester.element(find.byKey(key));
+        final HermesRouter foundRouter = HermesRouter.of(context);
+        expect(foundRouter, router);
+      },
+    );
+
+    testWidgets(
+      'It should throw if there is no go router in the widget tree',
+      (WidgetTester tester) async {
+        const Key key = Key('key');
+        await tester.pumpWidget(const SizedBox(key: key));
+
+        final Element context = tester.element(find.byKey(key));
+        expect(() => HermesRouter.of(context), throwsA(anything));
+      },
+    );
+  });
+
+  group('maybeOf', () {
+    testWidgets(
+      'It should return the go router instance of the widget tree',
+      (WidgetTester tester) async {
+        const Key key = Key('key');
+        final List<RouteBase> routes = <RouteBase>[
+          HermesRoute(
+            path: '/',
+            builder: (_, __) => const SizedBox(key: key),
+          ),
+        ];
+
+        final HermesRouter router = await createRouter(routes, tester);
+        final Element context = tester.element(find.byKey(key));
+        final HermesRouter? foundRouter = HermesRouter.maybeOf(context);
+        expect(foundRouter, router);
+      },
+    );
+
+    testWidgets(
+      'It should return null if there is no go router in the widget tree',
+      (WidgetTester tester) async {
+        const Key key = Key('key');
+        await tester.pumpWidget(const SizedBox(key: key));
+
+        final Element context = tester.element(find.byKey(key));
+        expect(HermesRouter.maybeOf(context), isNull);
+      },
+    );
+  });
 }
+
+/// This allows a value of type T or T? to be treated as a value of type T?.
+///
+/// We use this so that APIs that have become non-nullable can still be used
+/// with `!` and `?` on the stable branch.
+T? _ambiguate<T>(T? value) => value;

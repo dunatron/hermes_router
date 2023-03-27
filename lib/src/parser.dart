@@ -16,11 +16,12 @@ import 'redirection.dart';
 
 /// Converts between incoming URLs and a [RouteMatchList] using [RouteMatcher].
 /// Also performs redirection using [RouteRedirector].
-class GoRouteInformationParser extends RouteInformationParser<RouteMatchList> {
-  /// Creates a [GoRouteInformationParser].
-  GoRouteInformationParser({
+class HermesRouteInformationParser
+    extends RouteInformationParser<RouteMatchList> {
+  /// Creates a [HermesRouteInformationParser].
+  HermesRouteInformationParser({
     required this.configuration,
-    this.debugRequireGoRouteInformationProvider = false,
+    this.debugRequireHermesRouteInformationProvider = false,
   })  : matcher = RouteMatcher(configuration),
         redirector = redirect;
 
@@ -33,14 +34,14 @@ class GoRouteInformationParser extends RouteInformationParser<RouteMatchList> {
   /// The route redirector.
   final RouteRedirector redirector;
 
-  /// A debug property to assert [GoRouteInformationProvider] is in use along
+  /// A debug property to assert [HermesRouteInformationProvider] is in use along
   /// with this parser.
   ///
   /// An assertion error will be thrown if this property set to true and the
-  /// [GoRouteInformationProvider] is not in use.
+  /// [HermesRouteInformationProvider] is not in use.
   ///
   /// Defaults to false.
-  final bool debugRequireGoRouteInformationProvider;
+  final bool debugRequireHermesRouteInformationProvider;
 
   /// The future of current route parsing.
   ///

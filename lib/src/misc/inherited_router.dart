@@ -7,24 +7,24 @@ import 'package:flutter/widgets.dart';
 
 import '../router.dart';
 
-/// GoRouter implementation of InheritedWidget.
+/// HermesRouter implementation of InheritedWidget.
 ///
-/// Used for to find the current GoRouter in the widget tree. This is useful
+/// Used for to find the current HermesRouter in the widget tree. This is useful
 /// when routing from anywhere in your app.
-class InheritedGoRouter extends InheritedNotifier<GoRouter> {
+class InheritedHermesRouter extends InheritedNotifier<HermesRouter> {
   /// Default constructor for the inherited go router.
-  const InheritedGoRouter({
+  const InheritedHermesRouter({
     required super.child,
     required this.goRouter,
     super.key,
   }) : super(notifier: goRouter);
 
-  /// The [GoRouter] that is made available to the widget tree.
-  final GoRouter goRouter;
+  /// The [HermesRouter] that is made available to the widget tree.
+  final HermesRouter goRouter;
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<GoRouter>('goRouter', goRouter));
+    properties.add(DiagnosticsProperty<HermesRouter>('goRouter', goRouter));
   }
 }

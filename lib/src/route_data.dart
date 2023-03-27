@@ -23,19 +23,19 @@ abstract class RouteData {
 /// Subclasses must override one of [build], [buildPage], or
 /// [redirect].
 /// {@category Type-safe routes}
-abstract class GoRouteData extends RouteData {
+abstract class HermesRouteData extends RouteData {
   /// Allows subclasses to have `const` constructors.
   ///
-  /// [GoRouteData] is abstract and cannot be instantiated directly.
-  const GoRouteData();
+  /// [HermesRouteData] is abstract and cannot be instantiated directly.
+  const HermesRouteData();
 
   /// Creates the [Widget] for `this` route.
   ///
   /// Subclasses must override one of [build], [buildPage], or
   /// [redirect].
   ///
-  /// Corresponds to [GoRoute.builder].
-  Widget build(BuildContext context, GoRouterState state) =>
+  /// Corresponds to [HermesRoute.builder].
+  Widget build(BuildContext context, HermesRouterState state) =>
       throw UnimplementedError(
         'One of `build` or `buildPage` must be implemented.',
       );
@@ -47,11 +47,11 @@ abstract class GoRouteData extends RouteData {
   /// Subclasses must override one of [build], [buildPage] or
   /// [redirect].
   ///
-  /// Corresponds to [GoRoute.pageBuilder].
+  /// Corresponds to [HermesRoute.pageBuilder].
   ///
   /// By default, returns a [Page] instance that is ignored, causing a default
   /// [Page] implementation to be used with the results of [build].
-  Page<void> buildPage(BuildContext context, GoRouterState state) =>
+  Page<void> buildPage(BuildContext context, HermesRouterState state) =>
       const NoOpPage();
 
   /// An optional redirect function for this route.
@@ -59,8 +59,9 @@ abstract class GoRouteData extends RouteData {
   /// Subclasses must override one of [build], [buildPage], or
   /// [redirect].
   ///
-  /// Corresponds to [GoRoute.redirect].
-  FutureOr<String?> redirect(BuildContext context, GoRouterState state) => null;
+  /// Corresponds to [HermesRoute.redirect].
+  FutureOr<String?> redirect(BuildContext context, HermesRouterState state) =>
+      null;
 
   /// A helper function used by generated code.
   ///
@@ -77,17 +78,17 @@ abstract class GoRouteData extends RouteData {
   /// A helper function used by generated code.
   ///
   /// Should not be used directly.
-  static GoRoute $route<T extends GoRouteData>({
+  static HermesRoute $route<T extends HermesRouteData>({
     required String path,
-    required T Function(GoRouterState) factory,
+    required T Function(HermesRouterState) factory,
     GlobalKey<NavigatorState>? parentNavigatorKey,
     List<RouteBase> routes = const <RouteBase>[],
   }) {
-    T factoryImpl(GoRouterState state) {
+    T factoryImpl(HermesRouterState state) {
       final Object? extra = state.extra;
 
       // If the "extra" value is of type `T` then we know it's the source
-      // instance of `GoRouteData`, so it doesn't need to be recreated.
+      // instance of `HermesRouteData`, so it doesn't need to be recreated.
       if (extra is T) {
         return extra;
       }
@@ -95,16 +96,16 @@ abstract class GoRouteData extends RouteData {
       return (_stateObjectExpando[state] ??= factory(state)) as T;
     }
 
-    Widget builder(BuildContext context, GoRouterState state) =>
+    Widget builder(BuildContext context, HermesRouterState state) =>
         factoryImpl(state).build(context, state);
 
-    Page<void> pageBuilder(BuildContext context, GoRouterState state) =>
+    Page<void> pageBuilder(BuildContext context, HermesRouterState state) =>
         factoryImpl(state).buildPage(context, state);
 
-    FutureOr<String?> redirect(BuildContext context, GoRouterState state) =>
+    FutureOr<String?> redirect(BuildContext context, HermesRouterState state) =>
         factoryImpl(state).redirect(context, state);
 
-    return GoRoute(
+    return HermesRoute(
       path: path,
       builder: builder,
       pageBuilder: pageBuilder,
@@ -114,15 +115,16 @@ abstract class GoRouteData extends RouteData {
     );
   }
 
-  /// Used to cache [GoRouteData] that corresponds to a given [GoRouterState]
+  /// Used to cache [HermesRouteData] that corresponds to a given [HermesRouterState]
   /// to minimize the number of times it has to be deserialized.
-  static final Expando<GoRouteData> _stateObjectExpando = Expando<GoRouteData>(
-    'GoRouteState to GoRouteData expando',
+  static final Expando<HermesRouteData> _stateObjectExpando =
+      Expando<HermesRouteData>(
+    'HermesRouteState to HermesRouteData expando',
   );
 
   /// [navigatorKey] is used to point to a certain navigator
   ///
-  /// It will use the given key to find the right navigator for [GoRoute]
+  /// It will use the given key to find the right navigator for [HermesRoute]
   GlobalKey<NavigatorState>? get navigatorKey => null;
 }
 
@@ -135,7 +137,7 @@ abstract class ShellRouteData extends RouteData {
   /// [pageBuilder] is used to build the page
   Page<void> pageBuilder(
     BuildContext context,
-    GoRouterState state,
+    HermesRouterState state,
     Widget navigator,
   ) =>
       const NoOpPage();
@@ -143,7 +145,7 @@ abstract class ShellRouteData extends RouteData {
   /// [pageBuilder] is used to build the page
   Widget builder(
     BuildContext context,
-    GoRouterState state,
+    HermesRouterState state,
     Widget navigator,
   ) =>
       throw UnimplementedError(
@@ -154,15 +156,15 @@ abstract class ShellRouteData extends RouteData {
   ///
   /// Should not be used directly.
   static ShellRoute $route<T extends ShellRouteData>({
-    required T Function(GoRouterState) factory,
+    required T Function(HermesRouterState) factory,
     GlobalKey<NavigatorState>? navigatorKey,
     List<RouteBase> routes = const <RouteBase>[],
   }) {
-    T factoryImpl(GoRouterState state) {
+    T factoryImpl(HermesRouterState state) {
       final Object? extra = state.extra;
 
       // If the "extra" value is of type `T` then we know it's the source
-      // instance of `GoRouteData`, so it doesn't need to be recreated.
+      // instance of `HermesRouteData`, so it doesn't need to be recreated.
       if (extra is T) {
         return extra;
       }
@@ -172,7 +174,7 @@ abstract class ShellRouteData extends RouteData {
 
     Widget builder(
       BuildContext context,
-      GoRouterState state,
+      HermesRouterState state,
       Widget navigator,
     ) =>
         factoryImpl(state).builder(
@@ -183,7 +185,7 @@ abstract class ShellRouteData extends RouteData {
 
     Page<void> pageBuilder(
       BuildContext context,
-      GoRouterState state,
+      HermesRouterState state,
       Widget navigator,
     ) =>
         factoryImpl(state).pageBuilder(
@@ -200,11 +202,11 @@ abstract class ShellRouteData extends RouteData {
     );
   }
 
-  /// Used to cache [ShellRouteData] that corresponds to a given [GoRouterState]
+  /// Used to cache [ShellRouteData] that corresponds to a given [HermesRouterState]
   /// to minimize the number of times it has to be deserialized.
   static final Expando<ShellRouteData> _stateObjectExpando =
       Expando<ShellRouteData>(
-    'GoRouteState to ShellRouteData expando',
+    'HermesRouteState to ShellRouteData expando',
   );
 
   /// It will be used to instantiate [Navigator] with the given key
@@ -219,9 +221,9 @@ class TypedRoute<T extends RouteData> {
 
 /// A superclass for each typed go route descendant
 @Target(<TargetKind>{TargetKind.library, TargetKind.classType})
-class TypedGoRoute<T extends GoRouteData> extends TypedRoute<T> {
+class TypedHermesRoute<T extends HermesRouteData> extends TypedRoute<T> {
   /// Default const constructor
-  const TypedGoRoute({
+  const TypedHermesRoute({
     required this.path,
     this.routes = const <TypedRoute<RouteData>>[],
     this.parentNavigatorKey,
@@ -229,7 +231,7 @@ class TypedGoRoute<T extends GoRouteData> extends TypedRoute<T> {
 
   /// The path that corresponds to this route.
   ///
-  /// See [GoRoute.path].
+  /// See [HermesRoute.path].
   ///
   ///
   final String path;
@@ -239,7 +241,7 @@ class TypedGoRoute<T extends GoRouteData> extends TypedRoute<T> {
   /// See [RouteBase.routes].
   final List<TypedRoute<RouteData>> routes;
 
-  /// {@macro go_router.GoRoute.parentNavigatorKey}
+  /// {@macro go_router.HermesRoute.parentNavigatorKey}
   final GlobalKey<NavigatorState>? parentNavigatorKey;
 }
 

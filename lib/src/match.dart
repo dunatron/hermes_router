@@ -8,7 +8,7 @@ import 'matching.dart';
 import 'path_utils.dart';
 import 'route.dart';
 
-///  An instance of a GoRoute plus information about the current location.
+///  An instance of a HermesRoute plus information about the current location.
 class RouteMatch {
   /// Constructor for [RouteMatch].
   RouteMatch({
@@ -35,7 +35,7 @@ class RouteMatch {
         error: null,
         pageKey: ValueKey<String>(route.hashCode.toString()),
       );
-    } else if (route is GoRoute) {
+    } else if (route is HermesRoute) {
       assert(!route.path.contains('//'));
 
       final RegExpMatch? match = route.matchPatternAsPrefix(restLoc);

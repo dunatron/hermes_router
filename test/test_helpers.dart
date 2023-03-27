@@ -9,12 +9,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hermes_router/hermes_router.dart';
 
-Future<GoRouter> createGoRouter(WidgetTester tester) async {
-  final GoRouter goRouter = GoRouter(
+Future<HermesRouter> createHermesRouter(WidgetTester tester) async {
+  final HermesRouter goRouter = HermesRouter(
     initialLocation: '/',
-    routes: <GoRoute>[
-      GoRoute(path: '/', builder: (_, __) => const DummyStatefulWidget()),
-      GoRoute(
+    routes: <HermesRoute>[
+      HermesRoute(path: '/', builder: (_, __) => const DummyStatefulWidget()),
+      HermesRoute(
         path: '/error',
         builder: (_, __) => TestErrorScreen(TestFailure('Exception')),
       ),
@@ -28,13 +28,13 @@ Future<GoRouter> createGoRouter(WidgetTester tester) async {
 
 Widget fakeNavigationBuilder(
   BuildContext context,
-  GoRouterState state,
+  HermesRouterState state,
   Widget child,
 ) =>
     child;
 
-class GoRouterNamedLocationSpy extends GoRouter {
-  GoRouterNamedLocationSpy({required super.routes});
+class HermesRouterNamedLocationSpy extends HermesRouter {
+  HermesRouterNamedLocationSpy({required super.routes});
 
   String? name;
   Map<String, String>? params;
@@ -53,8 +53,8 @@ class GoRouterNamedLocationSpy extends GoRouter {
   }
 }
 
-class GoRouterGoSpy extends GoRouter {
-  GoRouterGoSpy({required super.routes});
+class HermesRouterHermesSpy extends HermesRouter {
+  HermesRouterHermesSpy({required super.routes});
 
   String? myLocation;
   Object? extra;
@@ -66,8 +66,8 @@ class GoRouterGoSpy extends GoRouter {
   }
 }
 
-class GoRouterGoNamedSpy extends GoRouter {
-  GoRouterGoNamedSpy({required super.routes});
+class HermesRouterHermesNamedSpy extends HermesRouter {
+  HermesRouterHermesNamedSpy({required super.routes});
 
   String? name;
   Map<String, String>? params;
@@ -88,21 +88,22 @@ class GoRouterGoNamedSpy extends GoRouter {
   }
 }
 
-class GoRouterPushSpy extends GoRouter {
-  GoRouterPushSpy({required super.routes});
+class HermesRouterPushSpy extends HermesRouter {
+  HermesRouterPushSpy({required super.routes});
 
   String? myLocation;
   Object? extra;
 
   @override
-  void push(String location, {Object? extra}) {
+  Future<T?> push<T extends Object?>(String location, {Object? extra}) {
     myLocation = location;
     this.extra = extra;
+    return Future<T?>.value(extra as T?);
   }
 }
 
-class GoRouterPushNamedSpy extends GoRouter {
-  GoRouterPushNamedSpy({required super.routes});
+class HermesRouterPushNamedSpy extends HermesRouter {
+  HermesRouterPushNamedSpy({required super.routes});
 
   String? name;
   Map<String, String>? params;
@@ -110,7 +111,7 @@ class GoRouterPushNamedSpy extends GoRouter {
   Object? extra;
 
   @override
-  void pushNamed(
+  Future<T?> pushNamed<T extends Object?>(
     String name, {
     Map<String, String> params = const <String, String>{},
     Map<String, dynamic> queryParams = const <String, dynamic>{},
@@ -120,36 +121,41 @@ class GoRouterPushNamedSpy extends GoRouter {
     this.params = params;
     this.queryParams = queryParams;
     this.extra = extra;
+    return Future<T?>.value(extra as T?);
   }
 }
 
-class GoRouterPopSpy extends GoRouter {
-  GoRouterPopSpy({required super.routes});
+class HermesRouterPopSpy extends HermesRouter {
+  HermesRouterPopSpy({required super.routes});
 
   bool popped = false;
+  Object? poppedResult;
 
   @override
   void pop<T extends Object?>([T? result]) {
     popped = true;
+    poppedResult = result;
   }
 }
 
-Future<GoRouter> createRouter(
+Future<HermesRouter> createRouter(
   List<RouteBase> routes,
   WidgetTester tester, {
-  GoRouterRedirect? redirect,
+  HermesRouterRedirect? redirect,
   String initialLocation = '/',
+  Object? initialExtra,
   int redirectLimit = 5,
   GlobalKey<NavigatorState>? navigatorKey,
-  GoRouterWidgetBuilder? errorBuilder,
+  HermesRouterWidgetBuilder? errorBuilder,
 }) async {
-  final GoRouter goRouter = GoRouter(
+  final HermesRouter goRouter = HermesRouter(
     routes: routes,
     redirect: redirect,
     initialLocation: initialLocation,
+    initialExtra: initialExtra,
     redirectLimit: redirectLimit,
     errorBuilder: errorBuilder ??
-        (BuildContext context, GoRouterState state) =>
+        (BuildContext context, HermesRouterState state) =>
             TestErrorScreen(state.error!),
     navigatorKey: navigatorKey,
   );
@@ -214,7 +220,8 @@ class DummyScreen extends StatelessWidget {
   Widget build(BuildContext context) => const Placeholder();
 }
 
-Widget dummy(BuildContext context, GoRouterState state) => const DummyScreen();
+Widget dummy(BuildContext context, HermesRouterState state) =>
+    const DummyScreen();
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 

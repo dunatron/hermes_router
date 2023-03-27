@@ -12,7 +12,7 @@ import 'typedefs.dart';
 export 'route.dart';
 export 'state.dart';
 
-/// The route configuration for GoRouter configured by the app.
+/// The route configuration for HermesRouter configured by the app.
 class RouteConfiguration {
   /// Constructs a [RouteConfiguration].
   RouteConfiguration({
@@ -21,8 +21,8 @@ class RouteConfiguration {
     required this.topRedirect,
     required this.navigatorKey,
   })  : assert(_debugCheckPath(routes, true)),
-        assert(
-            _debugVerifyNoDuplicatePathParameter(routes, <String, GoRoute>{})),
+        assert(_debugVerifyNoDuplicatePathParameter(
+            routes, <String, HermesRoute>{})),
         assert(_debugCheckParentNavigatorKeys(
             routes, <GlobalKey<NavigatorState>>[navigatorKey])) {
     _cacheNameToPath('', routes);
@@ -32,7 +32,7 @@ class RouteConfiguration {
   static bool _debugCheckPath(List<RouteBase> routes, bool isTopLevel) {
     for (final RouteBase route in routes) {
       late bool subRouteIsTopLevel;
-      if (route is GoRoute) {
+      if (route is HermesRoute) {
         if (isTopLevel) {
           assert(route.path.startsWith('/'),
               'top-level path must start with "/": $route');
@@ -54,7 +54,7 @@ class RouteConfiguration {
   static bool _debugCheckParentNavigatorKeys(
       List<RouteBase> routes, List<GlobalKey<NavigatorState>> allowedKeys) {
     for (final RouteBase route in routes) {
-      if (route is GoRoute) {
+      if (route is HermesRoute) {
         final GlobalKey<NavigatorState>? parentKey = route.parentNavigatorKey;
         if (parentKey != null) {
           // Verify that the root navigator or a ShellRoute ancestor has a
@@ -62,7 +62,7 @@ class RouteConfiguration {
           assert(
               allowedKeys.contains(parentKey),
               'parentNavigatorKey $parentKey must refer to'
-              " an ancestor ShellRoute's navigatorKey or GoRouter's"
+              " an ancestor ShellRoute's navigatorKey or HermesRouter's"
               ' navigatorKey');
 
           _debugCheckParentNavigatorKeys(
@@ -92,15 +92,15 @@ class RouteConfiguration {
   }
 
   static bool _debugVerifyNoDuplicatePathParameter(
-      List<RouteBase> routes, Map<String, GoRoute> usedPathParams) {
+      List<RouteBase> routes, Map<String, HermesRoute> usedPathParams) {
     for (final RouteBase route in routes) {
-      if (route is! GoRoute) {
+      if (route is! HermesRoute) {
         continue;
       }
       for (final String pathParam in route.pathParams) {
         if (usedPathParams.containsKey(pathParam)) {
           final bool sameRoute = usedPathParams[pathParam] == route;
-          throw GoError(
+          throw HermesError(
               "duplicate path parameter, '$pathParam' found in ${sameRoute ? '$route' : '${usedPathParams[pathParam]}, and $route'}");
         }
         usedPathParams[pathParam] = route;
@@ -111,21 +111,21 @@ class RouteConfiguration {
     return true;
   }
 
-  /// The list of top level routes used by [GoRouterDelegate].
+  /// The list of top level routes used by [HermesRouterDelegate].
   final List<RouteBase> routes;
 
   /// The limit for the number of consecutive redirects.
   final int redirectLimit;
 
   /// Top level page redirect.
-  final GoRouterRedirect topRedirect;
+  final HermesRouterRedirect topRedirect;
 
   /// The key to use when building the root [Navigator].
   final GlobalKey<NavigatorState> navigatorKey;
 
   final Map<String, String> _nameToPath = <String, String>{};
 
-  /// Looks up the url location by a [GoRoute]'s name.
+  /// Looks up the url location by a [HermesRoute]'s name.
   String namedLocation(
     String name, {
     Map<String, String> params = const <String, String>{},
@@ -190,7 +190,7 @@ class RouteConfiguration {
   void _debugFullPathsFor(List<RouteBase> routes, String parentFullpath,
       int depth, StringBuffer sb) {
     for (final RouteBase route in routes) {
-      if (route is GoRoute) {
+      if (route is HermesRoute) {
         final String fullpath = concatenatePaths(parentFullpath, route.path);
         sb.writeln('  => ${''.padLeft(depth * 2)}$fullpath');
         _debugFullPathsFor(route.routes, fullpath, depth + 1, sb);
@@ -200,7 +200,7 @@ class RouteConfiguration {
 
   void _cacheNameToPath(String parentFullPath, List<RouteBase> childRoutes) {
     for (final RouteBase route in childRoutes) {
-      if (route is GoRoute) {
+      if (route is HermesRoute) {
         final String fullPath = concatenatePaths(parentFullPath, route.path);
 
         if (route.name != null) {

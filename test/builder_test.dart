@@ -11,18 +11,18 @@ import 'package:hermes_router/src/matching.dart';
 
 void main() {
   group('RouteBuilder', () {
-    testWidgets('Builds GoRoute', (WidgetTester tester) async {
+    testWidgets('Builds HermesRoute', (WidgetTester tester) async {
       final RouteConfiguration config = RouteConfiguration(
         routes: <RouteBase>[
-          GoRoute(
+          HermesRoute(
             path: '/',
-            builder: (BuildContext context, GoRouterState state) {
+            builder: (BuildContext context, HermesRouterState state) {
               return _DetailsScreen();
             },
           ),
         ],
         redirectLimit: 10,
-        topRedirect: (BuildContext context, GoRouterState state) {
+        topRedirect: (BuildContext context, HermesRouterState state) {
           return null;
         },
         navigatorKey: GlobalKey<NavigatorState>(),
@@ -31,7 +31,7 @@ void main() {
       final RouteMatchList matches = RouteMatchList(
           <RouteMatch>[
             RouteMatch(
-              route: config.routes.first as GoRoute,
+              route: config.routes.first as HermesRoute,
               subloc: '/',
               extra: null,
               error: null,
@@ -55,21 +55,21 @@ void main() {
       final RouteConfiguration config = RouteConfiguration(
         routes: <RouteBase>[
           ShellRoute(
-              builder:
-                  (BuildContext context, GoRouterState state, Widget child) {
+              builder: (BuildContext context, HermesRouterState state,
+                  Widget child) {
                 return _DetailsScreen();
               },
-              routes: <GoRoute>[
-                GoRoute(
+              routes: <HermesRoute>[
+                HermesRoute(
                   path: '/',
-                  builder: (BuildContext context, GoRouterState state) {
+                  builder: (BuildContext context, HermesRouterState state) {
                     return _DetailsScreen();
                   },
                 ),
               ]),
         ],
         redirectLimit: 10,
-        topRedirect: (BuildContext context, GoRouterState state) {
+        topRedirect: (BuildContext context, HermesRouterState state) {
           return null;
         },
         navigatorKey: GlobalKey<NavigatorState>(),
@@ -104,15 +104,15 @@ void main() {
       final RouteConfiguration config = RouteConfiguration(
         navigatorKey: rootNavigatorKey,
         routes: <RouteBase>[
-          GoRoute(
+          HermesRoute(
             path: '/',
-            builder: (BuildContext context, GoRouterState state) {
+            builder: (BuildContext context, HermesRouterState state) {
               return _DetailsScreen();
             },
           ),
         ],
         redirectLimit: 10,
-        topRedirect: (BuildContext context, GoRouterState state) {
+        topRedirect: (BuildContext context, HermesRouterState state) {
           return null;
         },
       );
@@ -120,7 +120,7 @@ void main() {
       final RouteMatchList matches = RouteMatchList(
           <RouteMatch>[
             RouteMatch(
-              route: config.routes.first as GoRoute,
+              route: config.routes.first as HermesRoute,
               subloc: '/',
               extra: null,
               error: null,
@@ -150,16 +150,17 @@ void main() {
         navigatorKey: rootNavigatorKey,
         routes: <RouteBase>[
           ShellRoute(
-            builder: (BuildContext context, GoRouterState state, Widget child) {
+            builder:
+                (BuildContext context, HermesRouterState state, Widget child) {
               return _HomeScreen(
                 child: child,
               );
             },
             navigatorKey: shellNavigatorKey,
             routes: <RouteBase>[
-              GoRoute(
+              HermesRoute(
                 path: '/details',
-                builder: (BuildContext context, GoRouterState state) {
+                builder: (BuildContext context, HermesRouterState state) {
                   return _DetailsScreen();
                 },
               ),
@@ -167,7 +168,7 @@ void main() {
           ),
         ],
         redirectLimit: 10,
-        topRedirect: (BuildContext context, GoRouterState state) {
+        topRedirect: (BuildContext context, HermesRouterState state) {
           return null;
         },
       );
@@ -215,22 +216,23 @@ void main() {
         navigatorKey: rootNavigatorKey,
         routes: <RouteBase>[
           ShellRoute(
-            builder: (BuildContext context, GoRouterState state, Widget child) {
+            builder:
+                (BuildContext context, HermesRouterState state, Widget child) {
               return _HomeScreen(
                 child: child,
               );
             },
             navigatorKey: shellNavigatorKey,
             routes: <RouteBase>[
-              GoRoute(
+              HermesRoute(
                 path: '/a',
-                builder: (BuildContext context, GoRouterState state) {
+                builder: (BuildContext context, HermesRouterState state) {
                   return _DetailsScreen();
                 },
                 routes: <RouteBase>[
-                  GoRoute(
+                  HermesRoute(
                     path: 'details',
-                    builder: (BuildContext context, GoRouterState state) {
+                    builder: (BuildContext context, HermesRouterState state) {
                       return _DetailsScreen();
                     },
                     // This screen should stack onto the root navigator.
@@ -242,7 +244,7 @@ void main() {
           ),
         ],
         redirectLimit: 10,
-        topRedirect: (BuildContext context, GoRouterState state) {
+        topRedirect: (BuildContext context, HermesRouterState state) {
           return null;
         },
       );
@@ -250,7 +252,7 @@ void main() {
       final RouteMatchList matches = RouteMatchList(
           <RouteMatch>[
             RouteMatch(
-              route: config.routes.first.routes.first as GoRoute,
+              route: config.routes.first.routes.first as HermesRoute,
               subloc: '/a/details',
               extra: null,
               error: null,
@@ -326,7 +328,7 @@ class _BuilderTestWidget extends StatelessWidget {
       },
       errorPageBuilder: (
         BuildContext context,
-        GoRouterState state,
+        HermesRouterState state,
       ) {
         return MaterialPage<dynamic>(
           child: Text('Error: ${state.error}'),
@@ -334,7 +336,7 @@ class _BuilderTestWidget extends StatelessWidget {
       },
       errorBuilder: (
         BuildContext context,
-        GoRouterState state,
+        HermesRouterState state,
       ) {
         return Text('Error: ${state.error}');
       },
@@ -346,8 +348,13 @@ class _BuilderTestWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: builder.tryBuild(context, matches, (_, __) => false, false,
-          routeConfiguration.navigatorKey, <Page<Object?>, GoRouterState>{}),
+      home: builder.tryBuild(
+          context,
+          matches,
+          (_, __) => false,
+          false,
+          routeConfiguration.navigatorKey,
+          <Page<Object?>, HermesRouterState>{}),
       // builder: (context, child) => ,
     );
   }

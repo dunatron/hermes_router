@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/// Thrown when [GoRouter] is used incorrectly.
-class GoError extends Error {
-  /// Constructs a [GoError]
-  GoError(this.message);
+/// Thrown when [HermesRouter] is used incorrectly.
+class HermesError extends Error {
+  /// Constructs a [HermesError]
+  HermesError(this.message);
 
   /// The error message.
   final String message;
 
   @override
-  String toString() => 'GoError: $message';
+  String toString() => 'HermesError: $message';
 }

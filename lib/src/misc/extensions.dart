@@ -8,19 +8,19 @@ import '../router.dart';
 
 /// Dart extension to add navigation function to a BuildContext object, e.g.
 /// context.go('/');
-extension GoRouterHelper on BuildContext {
+extension HermesRouterHelper on BuildContext {
   /// Get a location from route name and parameters.
   String namedLocation(
     String name, {
     Map<String, String> params = const <String, String>{},
     Map<String, dynamic> queryParams = const <String, dynamic>{},
   }) =>
-      GoRouter.of(this)
+      HermesRouter.of(this)
           .namedLocation(name, params: params, queryParams: queryParams);
 
   /// Navigate to a location.
   void go(String location, {Object? extra}) =>
-      GoRouter.of(this).go(location, extra: extra);
+      HermesRouter.of(this).go(location, extra: extra);
 
   /// Navigate to a named route.
   void goNamed(
@@ -29,7 +29,7 @@ extension GoRouterHelper on BuildContext {
     Map<String, dynamic> queryParams = const <String, dynamic>{},
     Object? extra,
   }) =>
-      GoRouter.of(this).goNamed(
+      HermesRouter.of(this).goNamed(
         name,
         params: params,
         queryParams: queryParams,
@@ -45,7 +45,7 @@ extension GoRouterHelper on BuildContext {
   ///   it as the same page. The page key will be reused. This will preserve the
   ///   state and not run any page animation.
   Future<T?> push<T extends Object?>(String location, {Object? extra}) =>
-      GoRouter.of(this).push<T>(location, extra: extra);
+      HermesRouter.of(this).push<T>(location, extra: extra);
 
   /// Navigate to a named route onto the page stack.
   Future<T?> pushNamed<T extends Object?>(
@@ -54,7 +54,7 @@ extension GoRouterHelper on BuildContext {
     Map<String, dynamic> queryParams = const <String, dynamic>{},
     Object? extra,
   }) =>
-      GoRouter.of(this).pushNamed<T>(
+      HermesRouter.of(this).pushNamed<T>(
         name,
         params: params,
         queryParams: queryParams,
@@ -62,11 +62,11 @@ extension GoRouterHelper on BuildContext {
       );
 
   /// Returns `true` if there is more than 1 page on the stack.
-  bool canPop() => GoRouter.of(this).canPop();
+  bool canPop() => HermesRouter.of(this).canPop();
 
   /// Pop the top page off the Navigator's page stack by calling
   /// [Navigator.pop].
-  void pop<T extends Object?>([T? result]) => GoRouter.of(this).pop(result);
+  void pop<T extends Object?>([T? result]) => HermesRouter.of(this).pop(result);
 
   /// Replaces the top-most page of the page stack with the given URL location
   /// w/ optional query parameters, e.g. `/family/f2/person/p1?color=blue`.
@@ -78,7 +78,7 @@ extension GoRouterHelper on BuildContext {
   ///   it as the same page. The page key will be reused. This will preserve the
   ///   state and not run any page animation.
   void pushReplacement(String location, {Object? extra}) =>
-      GoRouter.of(this).pushReplacement(location, extra: extra);
+      HermesRouter.of(this).pushReplacement(location, extra: extra);
 
   /// Replaces the top-most page of the page stack with the named route w/
   /// optional parameters, e.g. `name='person', params={'fid': 'f2', 'pid':
@@ -93,7 +93,7 @@ extension GoRouterHelper on BuildContext {
     Map<String, dynamic> queryParams = const <String, dynamic>{},
     Object? extra,
   }) =>
-      GoRouter.of(this).pushReplacementNamed(
+      HermesRouter.of(this).pushReplacementNamed(
         name,
         params: params,
         queryParams: queryParams,
@@ -111,7 +111,7 @@ extension GoRouterHelper on BuildContext {
   /// * [pushReplacement] which replaces the top-most page of the page stack but
   ///   always uses a new page key.
   void replace(String location, {Object? extra}) =>
-      GoRouter.of(this).replace(location, extra: extra);
+      HermesRouter.of(this).replace(location, extra: extra);
 
   /// Replaces the top-most page with the named route and optional parameters,
   /// preserving the page key.
@@ -130,5 +130,5 @@ extension GoRouterHelper on BuildContext {
     Map<String, dynamic> queryParams = const <String, dynamic>{},
     Object? extra,
   }) =>
-      GoRouter.of(this).replaceNamed(name, extra: extra);
+      HermesRouter.of(this).replaceNamed(name, extra: extra);
 }

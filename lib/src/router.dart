@@ -16,7 +16,7 @@ import 'typedefs.dart';
 /// The route configuration for the app.
 ///
 /// The `routes` list specifies the top-level routes for the app. It must not be
-/// empty and must contain an [GoRouter] to match `/`.
+/// empty and must contain an [HermesRouter] to match `/`.
 ///
 /// See the [Get
 /// started](https://github.com/flutter/packages/blob/main/packages/go_router/example/lib/main.dart)
@@ -24,14 +24,14 @@ import 'typedefs.dart';
 ///
 /// The [redirect] callback allows the app to redirect to a new location.
 /// Alternatively, you can specify a redirect for an individual route using
-/// [GoRoute.redirect]. If [BuildContext.dependOnInheritedWidgetOfExactType] is
+/// [HermesRoute.redirect]. If [BuildContext.dependOnInheritedWidgetOfExactType] is
 /// used during the redirection (which is how `of` methods are usually
 /// implemented), a re-evaluation will be triggered when the [InheritedWidget]
 /// changes.
 ///
 /// See also:
 /// * [Configuration](https://pub.dev/documentation/go_router/latest/topics/Configuration-topic.html)
-/// * [GoRoute], which provides APIs to define the routing table.
+/// * [HermesRoute], which provides APIs to define the routing table.
 /// * [examples](https://github.com/flutter/packages/tree/main/packages/go_router/example),
 ///    which contains examples for different routing scenarios.
 /// {@category Get started}
@@ -43,18 +43,19 @@ import 'typedefs.dart';
 /// {@category Deep linking}
 /// {@category Error handling}
 /// {@category Named routes}
-class GoRouter extends ChangeNotifier implements RouterConfig<RouteMatchList> {
-  /// Default constructor to configure a GoRouter with a routes builder
+class HermesRouter extends ChangeNotifier
+    implements RouterConfig<RouteMatchList> {
+  /// Default constructor to configure a HermesRouter with a routes builder
   /// and an error page builder.
   ///
-  /// The `routes` must not be null and must contain an [GoRouter] to match `/`.
-  GoRouter({
+  /// The `routes` must not be null and must contain an [HermesRouter] to match `/`.
+  HermesRouter({
     required List<RouteBase> routes,
     // TODO(johnpryan): Change to a route, improve error API
     // See https://github.com/flutter/flutter/issues/108144
-    GoRouterPageBuilder? errorPageBuilder,
-    GoRouterWidgetBuilder? errorBuilder,
-    GoRouterRedirect? redirect,
+    HermesRouterPageBuilder? errorPageBuilder,
+    HermesRouterWidgetBuilder? errorBuilder,
+    HermesRouterRedirect? redirect,
     Listenable? refreshListenable,
     int redirectLimit = 5,
     bool routerNeglect = false,
@@ -81,12 +82,12 @@ class GoRouter extends ChangeNotifier implements RouterConfig<RouteMatchList> {
       navigatorKey: navigatorKey,
     );
 
-    _routeInformationParser = GoRouteInformationParser(
+    _routeInformationParser = HermesRouteInformationParser(
       configuration: _routeConfiguration,
-      debugRequireGoRouteInformationProvider: true,
+      debugRequireHermesRouteInformationProvider: true,
     );
 
-    _routeInformationProvider = GoRouteInformationProvider(
+    _routeInformationProvider = HermesRouteInformationProvider(
       initialRouteInformation: RouteInformation(
         location: _effectiveInitialLocation(initialLocation),
         state: initialExtra,
@@ -94,7 +95,7 @@ class GoRouter extends ChangeNotifier implements RouterConfig<RouteMatchList> {
       refreshListenable: refreshListenable,
     );
 
-    _routerDelegate = GoRouterDelegate(
+    _routerDelegate = HermesRouterDelegate(
       configuration: _routeConfiguration,
       errorPageBuilder: errorPageBuilder,
       errorBuilder: errorBuilder,
@@ -103,10 +104,10 @@ class GoRouter extends ChangeNotifier implements RouterConfig<RouteMatchList> {
         ...observers ?? <NavigatorObserver>[],
       ],
       restorationScopeId: restorationScopeId,
-      // wrap the returned Navigator to enable GoRouter.of(context).go() et al,
+      // wrap the returned Navigator to enable HermesRouter.of(context).go() et al,
       // allowing the caller to wrap the navigator themselves
       builderWithNav: (BuildContext context, Widget child) =>
-          InheritedGoRouter(goRouter: this, child: child),
+          InheritedHermesRouter(goRouter: this, child: child),
     );
     _routerDelegate.addListener(_handleStateMayChange);
 
@@ -117,9 +118,9 @@ class GoRouter extends ChangeNotifier implements RouterConfig<RouteMatchList> {
   }
 
   late final RouteConfiguration _routeConfiguration;
-  late final GoRouteInformationParser _routeInformationParser;
-  late final GoRouterDelegate _routerDelegate;
-  late final GoRouteInformationProvider _routeInformationProvider;
+  late final HermesRouteInformationParser _routeInformationParser;
+  late final HermesRouterDelegate _routerDelegate;
+  late final HermesRouteInformationProvider _routeInformationProvider;
 
   @override
   final BackButtonDispatcher backButtonDispatcher;
@@ -127,16 +128,16 @@ class GoRouter extends ChangeNotifier implements RouterConfig<RouteMatchList> {
   /// The router delegate. Provide this to the MaterialApp or CupertinoApp's
   /// `.router()` constructor
   @override
-  GoRouterDelegate get routerDelegate => _routerDelegate;
+  HermesRouterDelegate get routerDelegate => _routerDelegate;
 
-  /// The route information provider used by [GoRouter].
+  /// The route information provider used by [HermesRouter].
   @override
-  GoRouteInformationProvider get routeInformationProvider =>
+  HermesRouteInformationProvider get routeInformationProvider =>
       _routeInformationProvider;
 
-  /// The route information parser used by [GoRouter].
+  /// The route information parser used by [HermesRouter].
   @override
-  GoRouteInformationParser get routeInformationParser =>
+  HermesRouteInformationParser get routeInformationParser =>
       _routeInformationParser;
 
   /// The route configuration. Used for testing.
@@ -146,7 +147,7 @@ class GoRouter extends ChangeNotifier implements RouterConfig<RouteMatchList> {
 
   /// Gets the current location.
   // TODO(chunhtai): deprecates this once go_router_builder is migrated to
-  // GoRouterState.of.
+  // HermesRouterState.of.
   String get location => _location;
   String _location = '/';
 
@@ -338,7 +339,7 @@ class GoRouter extends ChangeNotifier implements RouterConfig<RouteMatchList> {
   /// Pop the top-most route off the current screen.
   ///
   /// If the top-most route is a pop up or dialog, this method pops it instead
-  /// of any GoRoute under it.
+  /// of any HermesRoute under it.
   void pop<T extends Object?>([T? result]) {
     assert(() {
       log.info('popping $location');
@@ -356,18 +357,18 @@ class GoRouter extends ChangeNotifier implements RouterConfig<RouteMatchList> {
     _routeInformationProvider.notifyListeners();
   }
 
-  /// Find the current GoRouter in the widget tree.
-  static GoRouter of(BuildContext context) {
-    final InheritedGoRouter? inherited =
-        context.dependOnInheritedWidgetOfExactType<InheritedGoRouter>();
-    assert(inherited != null, 'No GoRouter found in context');
+  /// Find the current HermesRouter in the widget tree.
+  static HermesRouter of(BuildContext context) {
+    final InheritedHermesRouter? inherited =
+        context.dependOnInheritedWidgetOfExactType<InheritedHermesRouter>();
+    assert(inherited != null, 'No HermesRouter found in context');
     return inherited!.goRouter;
   }
 
-  /// The current GoRouter in the widget tree, if any.
-  static GoRouter? maybeOf(BuildContext context) {
-    final InheritedGoRouter? inherited =
-        context.dependOnInheritedWidgetOfExactType<InheritedGoRouter>();
+  /// The current HermesRouter in the widget tree, if any.
+  static HermesRouter? maybeOf(BuildContext context) {
+    final InheritedHermesRouter? inherited =
+        context.dependOnInheritedWidgetOfExactType<InheritedHermesRouter>();
     return inherited?.goRouter;
   }
 

@@ -10,14 +10,14 @@ import 'pages/custom_transition_page.dart';
 import 'path_utils.dart';
 import 'typedefs.dart';
 
-/// The base class for [GoRoute] and [ShellRoute].
+/// The base class for [HermesRoute] and [ShellRoute].
 ///
 /// Routes are defined in a tree such that parent routes must match the
 /// current location for their child route to be considered a match. For
 /// example the location "/home/user/12" matches with parent route "/home" and
 /// child route "user/:userId".
 ///
-/// To create sub-routes for a route, provide them as a [GoRoute] list
+/// To create sub-routes for a route, provide them as a [HermesRoute] list
 /// with the sub routes.
 ///
 /// For example these routes:
@@ -30,28 +30,28 @@ import 'typedefs.dart';
 /// Can be represented as:
 ///
 /// ```
-/// final GoRouter _router = GoRouter(
-///   routes: <GoRoute>[
-///     GoRoute(
+/// final HermesRouter _router = HermesRouter(
+///   routes: <HermesRoute>[
+///     HermesRoute(
 ///       path: '/',
-///       pageBuilder: (BuildContext context, GoRouterState state) => MaterialPage<void>(
+///       pageBuilder: (BuildContext context, HermesRouterState state) => MaterialPage<void>(
 ///         key: state.pageKey,
 ///         child: HomePage(families: Families.data),
 ///       ),
-///       routes: <GoRoute>[
-///         GoRoute(
+///       routes: <HermesRoute>[
+///         HermesRoute(
 ///           path: 'family/:fid',
-///           pageBuilder: (BuildContext context, GoRouterState state) {
+///           pageBuilder: (BuildContext context, HermesRouterState state) {
 ///             final Family family = Families.family(state.params['fid']!);
 ///             return MaterialPage<void>(
 ///               key: state.pageKey,
 ///               child: FamilyPage(family: family),
 ///             );
 ///           },
-///           routes: <GoRoute>[
-///             GoRoute(
+///           routes: <HermesRoute>[
+///             HermesRoute(
 ///               path: 'person/:pid',
-///               pageBuilder: (BuildContext context, GoRouterState state) {
+///               pageBuilder: (BuildContext context, HermesRouterState state) {
 ///                 final Family family = Families.family(state.params['fid']!);
 ///                 final Person person = family.person(state.params['pid']!);
 ///                 return MaterialPage<void>(
@@ -72,19 +72,19 @@ import 'typedefs.dart';
 /// consider adding the dynamic route at the end of the routes
 /// For example:
 /// ```
-/// final GoRouter _router = GoRouter(
-///   routes: <GoRoute>[
-///     GoRoute(
+/// final HermesRouter _router = HermesRouter(
+///   routes: <HermesRoute>[
+///     HermesRoute(
 ///       path: '/',
 ///       redirect: (_) => '/family/${Families.data[0].id}',
 ///     ),
-///     GoRoute(
+///     HermesRoute(
 ///       path: '/family',
-///       pageBuilder: (BuildContext context, GoRouterState state) => ...,
+///       pageBuilder: (BuildContext context, HermesRouterState state) => ...,
 ///     ),
-///     GoRoute(
+///     HermesRoute(
 ///       path: '/:username',
-///       pageBuilder: (BuildContext context, GoRouterState state) => ...,
+///       pageBuilder: (BuildContext context, HermesRouterState state) => ...,
 ///     ),
 ///   ],
 /// );
@@ -119,11 +119,11 @@ abstract class RouteBase {
 /// {@category Transition animations}
 /// {@category Named routes}
 /// {@category Redirection}
-class GoRoute extends RouteBase {
-  /// Constructs a [GoRoute].
+class HermesRoute extends RouteBase {
+  /// Constructs a [HermesRoute].
   /// - [path] and [name] cannot be empty strings.
   /// - One of either [builder] or [pageBuilder] must be provided.
-  GoRoute({
+  HermesRoute({
     required this.path,
     this.name,
     this.builder,
@@ -131,8 +131,9 @@ class GoRoute extends RouteBase {
     this.parentNavigatorKey,
     this.redirect,
     super.routes = const <RouteBase>[],
-  })  : assert(path.isNotEmpty, 'GoRoute path cannot be empty'),
-        assert(name == null || name.isNotEmpty, 'GoRoute name cannot be empty'),
+  })  : assert(path.isNotEmpty, 'HermesRoute path cannot be empty'),
+        assert(name == null || name.isNotEmpty,
+            'HermesRoute name cannot be empty'),
         assert(pageBuilder != null || builder != null || redirect != null,
             'builder, pageBuilder, or redirect must be provided'),
         super._() {
@@ -144,7 +145,7 @@ class GoRoute extends RouteBase {
   ///
   /// If used, a unique string name must be provided and it can not be empty.
   ///
-  /// This is used in [GoRouter.namedLocation] and its related API. This
+  /// This is used in [HermesRouter.namedLocation] and its related API. This
   /// property can be used to navigate to this route without knowing exact the
   /// URI of it.
   ///
@@ -152,16 +153,16 @@ class GoRoute extends RouteBase {
   /// Typical usage is as follows:
   ///
   /// ```dart
-  /// GoRoute(
+  /// HermesRoute(
   ///   name: 'home',
   ///   path: '/',
-  ///   builder: (BuildContext context, GoRouterState state) =>
+  ///   builder: (BuildContext context, HermesRouterState state) =>
   ///       HomeScreen(),
-  ///   routes: <GoRoute>[
-  ///     GoRoute(
+  ///   routes: <HermesRoute>[
+  ///     HermesRoute(
   ///       name: 'family',
   ///       path: 'family/:fid',
-  ///       builder: (BuildContext context, GoRouterState state) =>
+  ///       builder: (BuildContext context, HermesRouterState state) =>
   ///           FamilyScreen(),
   ///     ),
   ///   ],
@@ -182,9 +183,9 @@ class GoRoute extends RouteBase {
   ///
   /// For example:
   /// ```
-  /// GoRoute(
+  /// HermesRoute(
   ///   path: '/',
-  ///   pageBuilder: (BuildContext context, GoRouterState state) => MaterialPage<void>(
+  ///   pageBuilder: (BuildContext context, HermesRouterState state) => MaterialPage<void>(
   ///     key: state.pageKey,
   ///     child: HomePage(families: Families.data),
   ///   ),
@@ -193,11 +194,11 @@ class GoRoute extends RouteBase {
   ///
   /// The path also support path parameters. For a path: `/family/:fid`, it
   /// matches all URIs start with `/family/...`, e.g. `/family/123`,
-  /// `/family/456` and etc. The parameter values are stored in [GoRouterState]
+  /// `/family/456` and etc. The parameter values are stored in [HermesRouterState]
   /// that are passed into [pageBuilder] and [builder].
   ///
   /// The query parameter are also capture during the route parsing and stored
-  /// in [GoRouterState].
+  /// in [HermesRouterState].
   ///
   /// See [Query parameters and path parameters](https://github.com/flutter/packages/blob/main/packages/go_router/example/lib/sub_routes.dart)
   /// to learn more about parameters.
@@ -207,9 +208,9 @@ class GoRoute extends RouteBase {
   ///
   /// Typically a MaterialPage, as in:
   /// ```
-  /// GoRoute(
+  /// HermesRoute(
   ///   path: '/',
-  ///   pageBuilder: (BuildContext context, GoRouterState state) => MaterialPage<void>(
+  ///   pageBuilder: (BuildContext context, HermesRouterState state) => MaterialPage<void>(
   ///     key: state.pageKey,
   ///     child: HomePage(families: Families.data),
   ///   ),
@@ -218,15 +219,15 @@ class GoRoute extends RouteBase {
   ///
   /// You can also use CupertinoPage, and for a custom page builder to use
   /// custom page transitions, you can use [CustomTransitionPage].
-  final GoRouterPageBuilder? pageBuilder;
+  final HermesRouterPageBuilder? pageBuilder;
 
   /// A custom builder for this route.
   ///
   /// For example:
   /// ```
-  /// GoRoute(
+  /// HermesRoute(
   ///   path: '/',
-  ///   builder: (BuildContext context, GoRouterState state) => FamilyPage(
+  ///   builder: (BuildContext context, HermesRouterState state) => FamilyPage(
   ///     families: Families.family(
   ///       state.params['id'],
   ///     ),
@@ -234,25 +235,25 @@ class GoRoute extends RouteBase {
   /// ),
   /// ```
   ///
-  final GoRouterWidgetBuilder? builder;
+  final HermesRouterWidgetBuilder? builder;
 
   /// An optional redirect function for this route.
   ///
   /// In the case that you like to make a redirection decision for a specific
   /// route (or sub-route), consider doing so by passing a redirect function to
-  /// the GoRoute constructor.
+  /// the HermesRoute constructor.
   ///
   /// For example:
   /// ```
-  /// final GoRouter _router = GoRouter(
-  ///   routes: <GoRoute>[
-  ///     GoRoute(
+  /// final HermesRouter _router = HermesRouter(
+  ///   routes: <HermesRoute>[
+  ///     HermesRoute(
   ///       path: '/',
   ///       redirect: (_) => '/family/${Families.data[0].id}',
   ///     ),
-  ///     GoRoute(
+  ///     HermesRoute(
   ///       path: '/family/:fid',
-  ///       pageBuilder: (BuildContext context, GoRouterState state) => ...,
+  ///       pageBuilder: (BuildContext context, HermesRouterState state) => ...,
   ///     ),
   ///   ],
   /// );
@@ -263,13 +264,13 @@ class GoRoute extends RouteBase {
   ///
   /// For example:
   /// ```
-  /// final GoRouter _router = GoRouter(
-  ///   routes: <GoRoute>[
-  ///     GoRoute(
+  /// final HermesRouter _router = HermesRouter(
+  ///   routes: <HermesRoute>[
+  ///     HermesRoute(
   ///       path: '/',
   ///       redirect: (_) => '/page1', // this takes priority over the sub-route.
-  ///       routes: <GoRoute>[
-  ///         GoRoute(
+  ///       routes: <HermesRoute>[
+  ///         HermesRoute(
   ///           path: 'child',
   ///           redirect: (_) => '/page2',
   ///         ),
@@ -290,9 +291,9 @@ class GoRoute extends RouteBase {
   /// If [BuildContext.dependOnInheritedWidgetOfExactType] is used during the
   /// redirection (which is how `of` method is usually implemented), a
   /// re-evaluation will be triggered if the [InheritedWidget] changes.
-  final GoRouterRedirect? redirect;
+  final HermesRouterRedirect? redirect;
 
-  /// {@template go_router.GoRoute.parentNavigatorKey}
+  /// {@template go_router.HermesRoute.parentNavigatorKey}
   /// An optional key specifying which Navigator to display this route's screen
   /// onto.
   ///
@@ -316,7 +317,7 @@ class GoRoute extends RouteBase {
 
   @override
   String toString() {
-    return 'GoRoute(name: $name, path: $path)';
+    return 'HermesRoute(name: $name, path: $path)';
   }
 
   late final RegExp _pathRE;
@@ -324,12 +325,12 @@ class GoRoute extends RouteBase {
 
 /// A route that displays a UI shell around the matching child route.
 ///
-/// When a ShellRoute is added to the list of routes on GoRouter or GoRoute, a
+/// When a ShellRoute is added to the list of routes on HermesRouter or HermesRoute, a
 /// new Navigator is used to display any matching sub-routes instead of placing
 /// them on the root Navigator.
 ///
 /// To display a child route on a different Navigator, provide it with a
-/// [parentNavigatorKey] that matches the key provided to either the [GoRouter]
+/// [parentNavigatorKey] that matches the key provided to either the [HermesRouter]
 /// or [ShellRoute] constructor. In this example, the _rootNavigator key is
 /// passed to the /b/details route so that it displays on the root Navigator
 /// instead of the ShellRoute's Navigator:
@@ -338,7 +339,7 @@ class GoRoute extends RouteBase {
 /// final GlobalKey<NavigatorState> _rootNavigatorKey =
 ///     GlobalKey<NavigatorState>();
 ///
-///   final GoRouter _router = GoRouter(
+///   final HermesRouter _router = HermesRouter(
 ///     navigatorKey: _rootNavigatorKey,
 ///     initialLocation: '/a',
 ///     routes: [
@@ -349,34 +350,34 @@ class GoRoute extends RouteBase {
 ///         },
 ///         routes: [
 ///           // This screen is displayed on the ShellRoute's Navigator.
-///           GoRoute(
+///           HermesRoute(
 ///             path: '/a',
 ///             builder: (context, state) {
 ///               return const ScreenA();
 ///             },
 ///             routes: <RouteBase>[
 ///               // This screen is displayed on the ShellRoute's Navigator.
-///               GoRoute(
+///               HermesRoute(
 ///                 path: 'details',
-///                 builder: (BuildContext context, GoRouterState state) {
+///                 builder: (BuildContext context, HermesRouterState state) {
 ///                   return const DetailsScreen(label: 'A');
 ///                 },
 ///               ),
 ///             ],
 ///           ),
 ///           // Displayed ShellRoute's Navigator.
-///           GoRoute(
+///           HermesRoute(
 ///             path: '/b',
-///             builder: (BuildContext context, GoRouterState state) {
+///             builder: (BuildContext context, HermesRouterState state) {
 ///               return const ScreenB();
 ///             },
 ///             routes: <RouteBase>[
 ///               // Displayed on the root Navigator by specifying the
 ///               // [parentNavigatorKey].
-///               GoRoute(
+///               HermesRoute(
 ///                 path: 'details',
 ///                 parentNavigatorKey: _rootNavigatorKey,
-///                 builder: (BuildContext context, GoRouterState state) {
+///                 builder: (BuildContext context, HermesRouterState state) {
 ///                   return const DetailsScreen(label: 'B');
 ///                 },
 ///               ),
@@ -395,7 +396,7 @@ class GoRoute extends RouteBase {
 ///
 /// ```
 /// ShellRoute(
-///   builder: (BuildContext context, GoRouterState state, Widget child) {
+///   builder: (BuildContext context, HermesRouterState state, Widget child) {
 ///     return Scaffold(
 ///       appBar: AppBar(
 ///         title: Text('App Shell')
@@ -406,9 +407,9 @@ class GoRoute extends RouteBase {
 ///     );
 ///   },
 ///   routes: [
-///     GoRoute(
+///     HermesRoute(
 ///       path: 'a'
-///       builder: (BuildContext context, GoRouterState state) {
+///       builder: (BuildContext context, HermesRouterState state) {
 ///         return Text('Child Route "/a"');
 ///       }
 ///     ),
@@ -429,7 +430,7 @@ class ShellRoute extends RouteBase {
         navigatorKey = navigatorKey ?? GlobalKey<NavigatorState>(),
         super._() {
     for (final RouteBase route in routes) {
-      if (route is GoRoute) {
+      if (route is HermesRoute) {
         assert(route.parentNavigatorKey == null ||
             route.parentNavigatorKey == navigatorKey);
       }
@@ -438,14 +439,14 @@ class ShellRoute extends RouteBase {
 
   /// The widget builder for a shell route.
   ///
-  /// Similar to GoRoute builder, but with an additional child parameter. This
+  /// Similar to HermesRoute builder, but with an additional child parameter. This
   /// child parameter is the Widget built by calling the matching sub-route's
   /// builder.
   final ShellRouteBuilder? builder;
 
   /// The page builder for a shell route.
   ///
-  /// Similar to GoRoute pageBuilder, but with an additional child parameter.
+  /// Similar to HermesRoute pageBuilder, but with an additional child parameter.
   /// This child parameter is the Widget built by calling the matching
   /// sub-route's builder.
   final ShellRoutePageBuilder? pageBuilder;
@@ -458,7 +459,7 @@ class ShellRoute extends RouteBase {
 
   /// {@template go_router.ShellRoute.navigatorKey}
   /// The [GlobalKey] to be used by the [Navigator] built for this route.
-  /// All ShellRoutes build a Navigator by default. Child GoRoutes
+  /// All ShellRoutes build a Navigator by default. Child HermesRoutes
   /// are placed onto this Navigator instead of the root Navigator.
   /// {@endtemplate}
   final GlobalKey<NavigatorState> navigatorKey;

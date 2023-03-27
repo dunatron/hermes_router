@@ -8,7 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
 /// The logger for this package.
-final Logger log = Logger('GoRouter');
+final Logger log = Logger('HermesRouter');
 
 StreamSubscription<LogRecord>? _subscription;
 

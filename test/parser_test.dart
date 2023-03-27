@@ -11,13 +11,13 @@ import 'package:hermes_router/src/matching.dart';
 import 'package:hermes_router/src/parser.dart';
 
 void main() {
-  Future<GoRouteInformationParser> createParser(
+  Future<HermesRouteInformationParser> createParser(
     WidgetTester tester, {
     required List<RouteBase> routes,
     int redirectLimit = 5,
-    GoRouterRedirect? redirect,
+    HermesRouterRedirect? redirect,
   }) async {
-    final GoRouter router = GoRouter(
+    final HermesRouter router = HermesRouter(
       routes: routes,
       redirectLimit: redirectLimit,
       redirect: redirect,
@@ -28,21 +28,21 @@ void main() {
     return router.routeInformationParser;
   }
 
-  testWidgets('GoRouteInformationParser can parse route',
+  testWidgets('HermesRouteInformationParser can parse route',
       (WidgetTester tester) async {
-    final List<GoRoute> routes = <GoRoute>[
-      GoRoute(
+    final List<HermesRoute> routes = <HermesRoute>[
+      HermesRoute(
         path: '/',
         builder: (_, __) => const Placeholder(),
-        routes: <GoRoute>[
-          GoRoute(
+        routes: <HermesRoute>[
+          HermesRoute(
             path: 'abc',
             builder: (_, __) => const Placeholder(),
           ),
         ],
       ),
     ];
-    final GoRouteInformationParser parser = await createParser(
+    final HermesRouteInformationParser parser = await createParser(
       tester,
       routes: routes,
       redirectLimit: 100,
@@ -76,23 +76,23 @@ void main() {
     expect(matches[1].route, routes[0].routes[0]);
   });
 
-  test('GoRouteInformationParser can retrieve route by name', () async {
-    final List<GoRoute> routes = <GoRoute>[
-      GoRoute(
+  test('HermesRouteInformationParser can retrieve route by name', () async {
+    final List<HermesRoute> routes = <HermesRoute>[
+      HermesRoute(
         path: '/',
         builder: (_, __) => const Placeholder(),
-        routes: <GoRoute>[
-          GoRoute(
+        routes: <HermesRoute>[
+          HermesRoute(
             path: 'abc',
             name: 'lowercase',
             builder: (_, __) => const Placeholder(),
           ),
-          GoRoute(
+          HermesRoute(
             path: 'efg',
             name: 'camelCase',
             builder: (_, __) => const Placeholder(),
           ),
-          GoRoute(
+          HermesRoute(
             path: 'hij',
             name: 'snake_case',
             builder: (_, __) => const Placeholder(),
@@ -128,14 +128,14 @@ void main() {
   });
 
   test(
-      'GoRouteInformationParser can retrieve route by name with query parameters',
+      'HermesRouteInformationParser can retrieve route by name with query parameters',
       () async {
-    final List<GoRoute> routes = <GoRoute>[
-      GoRoute(
+    final List<HermesRoute> routes = <HermesRoute>[
+      HermesRoute(
         path: '/',
         builder: (_, __) => const Placeholder(),
-        routes: <GoRoute>[
-          GoRoute(
+        routes: <HermesRoute>[
+          HermesRoute(
             path: 'abc',
             name: 'routeName',
             builder: (_, __) => const Placeholder(),
@@ -161,21 +161,21 @@ void main() {
     );
   });
 
-  testWidgets('GoRouteInformationParser returns error when unknown route',
+  testWidgets('HermesRouteInformationParser returns error when unknown route',
       (WidgetTester tester) async {
-    final List<GoRoute> routes = <GoRoute>[
-      GoRoute(
+    final List<HermesRoute> routes = <HermesRoute>[
+      HermesRoute(
         path: '/',
         builder: (_, __) => const Placeholder(),
-        routes: <GoRoute>[
-          GoRoute(
+        routes: <HermesRoute>[
+          HermesRoute(
             path: 'abc',
             builder: (_, __) => const Placeholder(),
           ),
         ],
       ),
     ];
-    final GoRouteInformationParser parser = await createParser(
+    final HermesRouteInformationParser parser = await createParser(
       tester,
       routes: routes,
       redirectLimit: 100,
@@ -196,21 +196,21 @@ void main() {
         'Exception: no routes for location: /def');
   });
 
-  testWidgets('GoRouteInformationParser can work with route parameters',
+  testWidgets('HermesRouteInformationParser can work with route parameters',
       (WidgetTester tester) async {
-    final List<GoRoute> routes = <GoRoute>[
-      GoRoute(
+    final List<HermesRoute> routes = <HermesRoute>[
+      HermesRoute(
         path: '/',
         builder: (_, __) => const Placeholder(),
-        routes: <GoRoute>[
-          GoRoute(
+        routes: <HermesRoute>[
+          HermesRoute(
             path: ':uid/family/:fid',
             builder: (_, __) => const Placeholder(),
           ),
         ],
       ),
     ];
-    final GoRouteInformationParser parser = await createParser(
+    final HermesRouteInformationParser parser = await createParser(
       tester,
       routes: routes,
       redirectLimit: 100,
@@ -236,25 +236,25 @@ void main() {
   });
 
   testWidgets(
-      'GoRouteInformationParser processes top level redirect when there is no match',
+      'HermesRouteInformationParser processes top level redirect when there is no match',
       (WidgetTester tester) async {
-    final List<GoRoute> routes = <GoRoute>[
-      GoRoute(
+    final List<HermesRoute> routes = <HermesRoute>[
+      HermesRoute(
         path: '/',
         builder: (_, __) => const Placeholder(),
-        routes: <GoRoute>[
-          GoRoute(
+        routes: <HermesRoute>[
+          HermesRoute(
             path: ':uid/family/:fid',
             builder: (_, __) => const Placeholder(),
           ),
         ],
       ),
     ];
-    final GoRouteInformationParser parser = await createParser(
+    final HermesRouteInformationParser parser = await createParser(
       tester,
       routes: routes,
       redirectLimit: 100,
-      redirect: (BuildContext context, GoRouterState state) {
+      redirect: (BuildContext context, HermesRouterState state) {
         if (state.location != '/123/family/345') {
           return '/123/family/345';
         }
@@ -276,18 +276,18 @@ void main() {
   });
 
   testWidgets(
-      'GoRouteInformationParser can do route level redirect when there is a match',
+      'HermesRouteInformationParser can do route level redirect when there is a match',
       (WidgetTester tester) async {
-    final List<GoRoute> routes = <GoRoute>[
-      GoRoute(
+    final List<HermesRoute> routes = <HermesRoute>[
+      HermesRoute(
         path: '/',
         builder: (_, __) => const Placeholder(),
-        routes: <GoRoute>[
-          GoRoute(
+        routes: <HermesRoute>[
+          HermesRoute(
             path: ':uid/family/:fid',
             builder: (_, __) => const Placeholder(),
           ),
-          GoRoute(
+          HermesRoute(
             path: 'redirect',
             redirect: (_, __) => '/123/family/345',
             builder: (_, __) => throw UnimplementedError(),
@@ -295,7 +295,7 @@ void main() {
         ],
       ),
     ];
-    final GoRouteInformationParser parser = await createParser(
+    final HermesRouteInformationParser parser = await createParser(
       tester,
       routes: routes,
       redirectLimit: 100,
@@ -316,15 +316,15 @@ void main() {
   });
 
   testWidgets(
-      'GoRouteInformationParser throws an exception when route is malformed',
+      'HermesRouteInformationParser throws an exception when route is malformed',
       (WidgetTester tester) async {
-    final List<GoRoute> routes = <GoRoute>[
-      GoRoute(
+    final List<HermesRoute> routes = <HermesRoute>[
+      HermesRoute(
         path: '/abc',
         builder: (_, __) => const Placeholder(),
       ),
     ];
-    final GoRouteInformationParser parser = await createParser(
+    final HermesRouteInformationParser parser = await createParser(
       tester,
       routes: routes,
       redirectLimit: 100,
@@ -339,16 +339,17 @@ void main() {
   });
 
   testWidgets(
-      'GoRouteInformationParser returns an error if a redirect is detected.',
+      'HermesRouteInformationParser returns an error if a redirect is detected.',
       (WidgetTester tester) async {
-    final List<GoRoute> routes = <GoRoute>[
-      GoRoute(
+    final List<HermesRoute> routes = <HermesRoute>[
+      HermesRoute(
         path: '/abc',
         builder: (_, __) => const Placeholder(),
-        redirect: (BuildContext context, GoRouterState state) => state.location,
+        redirect: (BuildContext context, HermesRouterState state) =>
+            state.location,
       ),
     ];
-    final GoRouteInformationParser parser = await createParser(
+    final HermesRouteInformationParser parser = await createParser(
       tester,
       routes: routes,
       redirect: (_, __) => null,
@@ -367,23 +368,23 @@ void main() {
   testWidgets('Creates a match for ShellRoute', (WidgetTester tester) async {
     final List<RouteBase> routes = <RouteBase>[
       ShellRoute(
-        builder: (BuildContext context, GoRouterState state, Widget child) {
+        builder: (BuildContext context, HermesRouterState state, Widget child) {
           return Scaffold(
             body: child,
           );
         },
         routes: <RouteBase>[
-          GoRoute(
+          HermesRoute(
             path: '/a',
-            builder: (BuildContext context, GoRouterState state) {
+            builder: (BuildContext context, HermesRouterState state) {
               return const Scaffold(
                 body: Text('Screen A'),
               );
             },
           ),
-          GoRoute(
+          HermesRoute(
             path: '/b',
-            builder: (BuildContext context, GoRouterState state) {
+            builder: (BuildContext context, HermesRouterState state) {
               return const Scaffold(
                 body: Text('Screen B'),
               );
@@ -392,7 +393,7 @@ void main() {
         ],
       ),
     ];
-    final GoRouteInformationParser parser = await createParser(
+    final HermesRouteInformationParser parser = await createParser(
       tester,
       routes: routes,
       redirect: (_, __) => null,

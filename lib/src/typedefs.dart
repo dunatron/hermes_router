@@ -8,45 +8,45 @@ import 'package:flutter/widgets.dart';
 
 import 'configuration.dart';
 
-/// The widget builder for [GoRoute].
-typedef GoRouterWidgetBuilder = Widget Function(
+/// The widget builder for [HermesRoute].
+typedef HermesRouterWidgetBuilder = Widget Function(
   BuildContext context,
-  GoRouterState state,
+  HermesRouterState state,
 );
 
-/// The page builder for [GoRoute].
-typedef GoRouterPageBuilder = Page<dynamic> Function(
+/// The page builder for [HermesRoute].
+typedef HermesRouterPageBuilder = Page<dynamic> Function(
   BuildContext context,
-  GoRouterState state,
+  HermesRouterState state,
 );
 
 /// The widget builder for [ShellRoute].
 typedef ShellRouteBuilder = Widget Function(
   BuildContext context,
-  GoRouterState state,
+  HermesRouterState state,
   Widget child,
 );
 
 /// The page builder for [ShellRoute].
 typedef ShellRoutePageBuilder = Page<dynamic> Function(
   BuildContext context,
-  GoRouterState state,
+  HermesRouterState state,
   Widget child,
 );
 
 /// The signature of the navigatorBuilder callback.
-typedef GoRouterNavigatorBuilder = Widget Function(
+typedef HermesRouterNavigatorBuilder = Widget Function(
   BuildContext context,
-  GoRouterState state,
+  HermesRouterState state,
   Widget child,
 );
 
 /// Signature of a go router builder function with navigator.
-typedef GoRouterBuilderWithNav = Widget Function(
+typedef HermesRouterBuilderWithNav = Widget Function(
   BuildContext context,
   Widget child,
 );
 
 /// The signature of the redirect callback.
-typedef GoRouterRedirect = FutureOr<String?> Function(
-    BuildContext context, GoRouterState state);
+typedef HermesRouterRedirect = FutureOr<String?> Function(
+    BuildContext context, HermesRouterState state);
